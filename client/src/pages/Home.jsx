@@ -1,4 +1,4 @@
-import Products from "./Products";
+import ProductList from "../components/ProductList";
 
 function Home(){
     return (
@@ -15,7 +15,7 @@ function Home(){
                 </div>
             </div>
 
-            <Products />
+            <ProductList />
         </>
     )
 }
