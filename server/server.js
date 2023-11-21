@@ -6,8 +6,11 @@ const { typeDefs, resolvers } = require('./graphql/schema');
 
 const app = express();
 
+// consider using dotenv to hide your database credentials
+// require('dotenv').config();
+
 // Connect to MongoDB
-mongoose.connect('your-mongodb-connection-string', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/ShopSphere', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Apply middleware for authentication
 app.use(authenticateUser);
