@@ -1,9 +1,37 @@
 import UserInfo from "../components/UserInfo";
 
-function Login(){
-    return(
+import { useState } from "react";
+import { useMutation } from "@apollo/client";
+
+import { LOGIN_USER } from "../utils/mutations";
+import Auth from "../utils/auth";
+
+function Login() {
+    const [userFormData, setUserFormData] = useState({ username: "", password: "" });
+    const [loginUser] = useMutation(LOGIN_USER);
+
+    const handleInputChange = (event) => {
+        const { name, value } = event.target;
+        setUserFormData({ ...userFormData, [name]: value });
+    };
+
+    const handleFormSubmit = async (event) => {
+        event.preventDefault();
+
+        try {
+            const { data } = await loginUser({
+                variables: { ...userFormData },
+            });
+
+            Auth.login(data.login.token);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    return (
         <section>
-            <UserInfo title={"Login"} page={"Login"} />
+            <UserInfo title={"Login"} page={"Login"} loginFormSubmit={handleFormSubmit} handleInputChange={handleInputChange}/>
         </section>
     )
 }

@@ -179,4 +179,9 @@ section {
     main {
         margin-top: 70px;
     }
+
+    section {
+        height: auto;
+        padding: 60px 0;
+    }
 }
