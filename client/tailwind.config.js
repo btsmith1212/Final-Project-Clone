@@ -7,9 +7,11 @@ export default {
   theme: {
     colors: {
       "dark": "#252422",
+      "gray": "#fbf8f3",
       "white": "#ffffff",
-      "gold": "#edc967",
-      "gray": "#3e424b"
+      "olive": "#6b9080",
+      "green-gray": "#d8ddd7",
+      "light-gray": "#f8f9fa"
     },
     extend: {},
   },

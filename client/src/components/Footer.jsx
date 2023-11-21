@@ -1,9 +1,29 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 function Footer() {
     return (
-        <footer className="fixed bottom-0 left-0 w-full py-3 text-center bg-dark text-white">
-            This is footer
+        // fixed left-0 bottom-0 sm:pl-60
+        <footer className=" w-full text-center footer">
+            <div className="py-5 bg-light-gray">
+                <ul className="mb-3">
+                    <Link to="https://github.com/YISEO" target="_blank" 
+                        className="mr-7 text-sm hover:font-bold"
+                    >
+                        Joy Kwon
+                    </Link>
+                    <Link to="https://github.com/mLek10" target="_blank" 
+                        className="mr-7 text-sm hover:font-bold"
+                    >
+                        Emily Caton
+                    </Link>
+                    <Link to="https://github.com/btsmith1212" target="_blank" 
+                        className="text-sm hover:font-bold"
+                    >
+                        Blake Smith
+                    </Link>
+                </ul>
+                <p className="text-sm">&copy; 2023 All Rights Reserved</p>
+            </div>
         </footer>
     );
 }
