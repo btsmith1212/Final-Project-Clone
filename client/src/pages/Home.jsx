@@ -1,6 +1,6 @@
 function Home(){
     return (
-        <section className="h-96 sm:min-h-screen relative">
+        <div className="h-96 sm:min-h-screen relative">
             <div className="h-full bg-no-repeat bg-cover bg-center intro-bg"></div>
             <div className="absolute top-1/2 left-1/2 flex flex-col justify-center items-center px-10 w-full intro-txt">
                 <h2 className="text-xl sm:text-4xl text-center font-bold">Welcome to ShopShpere</h2>
@@ -10,7 +10,7 @@ function Home(){
                     and embracing the beauty of conscious living.
                 </p>
             </div>
-        </section>
+        </div>
     )
 }
 
