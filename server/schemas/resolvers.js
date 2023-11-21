@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Product = require('../models/Product');
+const Product = require('../models/Products');
 
 const resolvers = {
   Query: {
