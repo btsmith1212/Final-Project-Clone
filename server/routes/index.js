@@ -1,13 +1,13 @@
 const express = require('express');
-const userRoutes = require('./userRoutes');
-const productRoutes = require('./productRoutes');
-const cartRoutes = require('./cartRoutes');
+const userRoutes = require('./api/userRoutes');
+const productRoutes = require('./api/productRoutes');
+const cartRoutes = require('./api/cartRoutes');
 
 const router = express.Router();
 
 // Use separate route files for different components (users, products, cart, etc.)
-router.use('/users', userRoutes);
-router.use('/products', productRoutes);
-router.use('/cart', cartRoutes);
+router.use('/userRoutes', userRoutes);
+router.use('/productRoutes', productRoutes);
+router.use('/cartRoutes', cartRoutes);
 
 module.exports = router;

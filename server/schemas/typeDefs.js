@@ -1,7 +1,10 @@
 const { gql } = require('apollo-server-express');
 
-
 const userTypeDefs = gql`
+  type Query {
+    getUser(userId: ID!): User
+  }
+
   type Mutation {
     registerUser(input: RegisterInput): AuthResponse
     loginUser(input: LoginInput): AuthResponse
@@ -23,39 +26,35 @@ const userTypeDefs = gql`
     token: String
   }
 
-  # Other types and queries...
+  type User {
+    _id: ID!
+    username: String!
+    password: String!
+  }
 `;
+
 const productTypeDefs = gql`
   type Query {
     getProduct(productId: ID!): Product
-    # Add other product-related queries...
   }
 
   type Mutation {
     createProduct(input: ProductInput): Product
     updateProduct(productId: ID!, input: ProductInput): Product
-    # Add other product-related mutations...
+    deleteProduct(productId: ID!): Product
   }
 
   input ProductInput {
     name: String!
     price: Float!
-    # Add other product-related input fields...
   }
 
   type Product {
     _id: ID!
     name: String!
     price: Float!
-    # Add other product-related fields...
   }
-
-  # Other types and queries specific to product...
 `;
 
-const typeDefs = [userTypeDefs, productTypeDefs, /* Add other type definitions as needed... */];
-
-
-module.exports = {
-  typeDefs
-};
+// Export an array of type definitions
+module.exports = [userTypeDefs, productTypeDefs, /* Add other type definitions as needed... */];
