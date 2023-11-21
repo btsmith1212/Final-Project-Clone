@@ -1,8 +1,11 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const mongoose = require('mongoose');
-const authenticateUser = require('./middleware/auth');
+const authenticateUser = require('./utils/auth');
 const { typeDefs, resolvers } = require('./graphql/schema');
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 const app = express();
 
@@ -14,6 +17,11 @@ mongoose.connect('mongodb://localhost:27017/ShopSphere', { useNewUrlParser: true
 
 // Apply middleware for authentication
 app.use(authenticateUser);
+
+// Use routes
+app.use('/users', userRoutes);
+app.use('/products', productRoutes);
+app.use('/cart', cartRoutes);
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
