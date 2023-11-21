@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
+const secret = "mysecretsshhhhh";
 
 const registerUser = async (_, { input }) => {
   const { username, password } = input;
@@ -38,7 +39,7 @@ const loginUser = async (_, { input }) => {
   }
 
   // Generate JWT token
-  const token = jwt.sign({ userId: user.id, username: user.username }, 'your-secret-key', {
+  const token = jwt.sign({ userId: user.id, username: user.username }, secret, { 
     expiresIn: '1h', // You can set the expiration time as needed
   });
 
