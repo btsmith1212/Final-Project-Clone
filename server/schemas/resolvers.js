@@ -20,6 +20,14 @@ const resolvers = {
         throw new Error('Error retrieving product');
       }
     },
+    getAllProducts: async () => {
+      try {
+        const products = await Product.find();
+        return products;
+      } catch (error) {
+        throw new Error('Error retrieving all products');
+      }
+    },
     getCart: async (_, { userId }) => {
       try {
         const cart = await Cart.findOne({ userId }).populate('products');
