@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Product = require('../models/Products');
+const { User, Product, Cart } = require('../models');
 
 const resolvers = {
   Query: {
@@ -21,7 +20,14 @@ const resolvers = {
         throw new Error('Error retrieving product');
       }
     },
-    // Add other queries...
+    getCart: async (_, { userId }) => {
+      try {
+        const cart = await Cart.findOne({ userId }).populate('products');
+        return cart;
+      } catch (error) {
+        throw new Error('Error retrieving cart');
+      }
+    }
   },
   Mutation: {
     registerUser: async (_, { input }) => {
@@ -103,7 +109,19 @@ const resolvers = {
         return { success: false, message: error.message || 'Error updating product' };
       }
     },
-    // Add other mutations...
+    updateCart: async (_, { userId, productId }) => {
+      try {
+        // Your cart update logic here
+        const cart = await Cart.findOneAndUpdate(
+          { userId },
+          { $addToSet: { products: productId } },
+          { new: true }
+        ).populate('products');
+        return cart;
+      } catch (error) {
+        return { success: false, message: error.message || 'Error updating cart' };
+      }
+    }
   },
   // Other resolvers...
 };
