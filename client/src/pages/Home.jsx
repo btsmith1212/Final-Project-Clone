@@ -1,6 +1,11 @@
-import ProductList from "../components/ProductList";
+import { Link } from "react-router-dom";
+import plantImg from "../assets/plant-img.svg";
+import clothesImg from "../assets/clothes-img.svg";
+import artImg from "../assets/art-img.svg";
 
 function Home(){
+    
+
     return (
         <>
             <div className="h-96 sm:min-h-screen relative">
@@ -15,7 +20,43 @@ function Home(){
                 </div>
             </div>
 
-            <ProductList />
+            <div className="py-24 px-5">
+                {/* <img className="max-w-sm" src={About} alt="pictures of books, art, plants, clothes" /> */}
+                <div className="">
+                    <h2 className="text-3xl text-center font-bold">About Us</h2>
+                    <p className="mt-3 text-center text-lg">
+                        An eco-conscious shopping experience! Our online marketplace is a platform<br/>
+                        designed for those who prioritize sustainability in their consumer choices. 
+                    </p>
+
+                    <div className="sm:mt-20 mt-14 max-w-4xl mx-auto">
+                        <ul>
+                            <li className="flex md:flex-row flex-col justify-between items-center">
+                                <img className="md:w-1/2 max-w-xs mr-5" src={plantImg} alt="two plants image" />
+                                <div className="md:w-1/2">
+                                    <p className="md:text-2xl text-lg ">Bring the beauty of nature <br />into your home <br /> with our vibrant plant selection</p>
+                                    <Link to="/products" className="w-40 mt-5 py-4 border border-olive rounded-lg text-olive text-center bg-no-repeat duration-300 gradation">Buy Now</Link>
+                                </div>
+                            </li>
+                            <li className="flex md:flex-row flex-col justify-between items-center mt-16">
+                                <div className="md:w-1/2">
+                                    <p className="md:text-2xl text-lg ">Uncover the stories behind our second-hand treasures now</p>
+                                    <Link to="/products" className="w-40 mt-5 py-4 border border-olive rounded-lg text-olive text-center bg-no-repeat duration-300 gradation">Buy Now</Link>
+                                </div>
+                                <img className="md:w-1/2 max-w-xs" src={clothesImg} alt="several clothes hanging from a hanger" />
+                            </li>
+                            <li className="flex md:flex-row flex-col justify-between items-center mt-16">
+                                <img className="md:w-1/2 max-w-xs mr-5" src={artImg} alt="two plants image" />
+                                <div className="md:w-1/2">
+                                    <p className="md:text-2xl text-lg ">Our art collection adds a touch of creativity and uniqueness to your space</p>
+                                    <Link to="/products" className="w-40 mt-5 py-4 border border-olive rounded-lg text-olive text-center bg-no-repeat duration-300 gradation">Buy Now</Link>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
         </>
     )
 }

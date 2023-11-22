@@ -2,9 +2,8 @@ import { Link } from "react-router-dom";
 
 function Footer() {
     return (
-        // fixed left-0 bottom-0 sm:pl-60
-        <footer className=" w-full text-center footer">
-            <div className="py-5 bg-light-gray">
+        <footer className="w-full px-4 text-center footer">
+            <div className="py-5 border-t border-green-gray">
                 <ul className="mb-3">
                     <Link to="https://github.com/YISEO" target="_blank" 
                         className="mr-7 text-sm hover:font-bold"

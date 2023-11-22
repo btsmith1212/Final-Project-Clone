@@ -1,8 +1,8 @@
 
 function Cart() {
     return (
-        <section>
-            This is Cart page
+        <section className="py-14">
+            <h2 className="text-3xl text-center font-bold">Shopping Cart</h2>
         </section>
     )
 }

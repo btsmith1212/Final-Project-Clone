@@ -1,10 +1,10 @@
+import ProductList from "../components/ProductList";
+
 function Products() {
     return (
         <section className="py-14">
-            <h2 className="text-3xl text-center font-bold">Products</h2>
-            <div>
-                <ul></ul>
-            </div>
+            <h2 className="text-3xl text-center font-bold">Our Products</h2>
+            <ProductList />
         </section>
     )
 }

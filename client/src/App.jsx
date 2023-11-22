@@ -7,7 +7,9 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { StoreProvider } from "./utils/GlobalState";
+import { useState, useEffect } from "react";
 
+import Loading from "./components/Loading";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -39,14 +41,37 @@ const client = new ApolloClient({
 
 
 function App() {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        // Perform any necessary loading logic here
+        setTimeout(() => {
+            setLoading(false);
+        }, 2000); // Simulating a 2-second loading time for demonstration purposes
+    }, []);
+
+    useEffect(() => {
+        if (!loading) {
+            // Add classes to trigger your CSS animations after loading
+            document.querySelector(".header > div").classList.add("slideIn");
+        }
+    }, [loading]);
+
+
     return (
         <ApolloProvider client={client}>
             <StoreProvider>
-                <Header />
-                <main className="sm:pl-60">
-                    <Outlet />
-                    <Footer />
-                </main>
+                {loading ? (
+                    <Loading />
+                ) : (
+                    <>
+                    <Header />
+                    <main className="sm:pl-60">
+                        <Outlet />
+                        <Footer />
+                    </main>
+                    </>
+                )}
             </StoreProvider>
         </ApolloProvider>
     );
