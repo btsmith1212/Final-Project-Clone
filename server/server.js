@@ -4,11 +4,6 @@ const mongoose = require('mongoose');
 const authenticateUser = require('./utils/auth');
 const { typeDefs, resolvers } = require('./schemas');
 
-// Import Express routes
-const userRoutes = require('./routes/api/userRoutes');
-const productRoutes = require('./routes/api/productRoutes');
-const cartRoutes = require('./routes/api/cartRoutes');
-
 const app = express();
 
 // Connect to MongoDB
@@ -17,11 +12,7 @@ mongoose.connect('mongodb://localhost:27017/ShopSphere', { useNewUrlParser: true
 // Apply middleware for authentication
 app.use(authenticateUser);
 
-// Use your REST API routes
-app.use('/api/userRoutes', userRoutes);
-app.use('/api/productRoutes', productRoutes);
-app.use('/api/cartRoutes', cartRoutes);
-
+// Apply middleware for GraphQL
 const server = new ApolloServer({ typeDefs, resolvers });
 
 async function startServer() {
