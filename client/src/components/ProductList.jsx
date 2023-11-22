@@ -43,10 +43,9 @@ function ProductList() {
     }
 
     return (
-        <div className="my-2">
-            <h2>Our Products</h2>
-            {state.products.length ? (
-                <div className="flex-row">
+        <div id="products" className="py-10">
+            {state.products.length &&
+                <ul className="flex flex justify-center items-center">
                     {filterProducts().map((product) => (
                         <ProductItem
                             key={product._id}
@@ -57,11 +56,8 @@ function ProductList() {
                             quantity={product.quantity}
                         />
                     ))}
-                </div>
-            ) : (
-                <h3>You haven&apos;t added any products yet!</h3>
-            )}
-            {loading ? <p>Loading</p> : null}
+                </ul>
+            }
         </div>
     );
 }
