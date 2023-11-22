@@ -1,7 +1,7 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const Product = require("../models/Product");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const { User, Product, Cart, Category } = require('../models');
+
 
 const resolvers = {
   Query: {
@@ -21,7 +21,22 @@ const resolvers = {
         throw new Error("Error retrieving product");
       }
     },
-    // Add other queries...
+    getAllProducts: async () => {
+      try {
+        const products = await Product.find();
+        return products;
+      } catch (error) {
+        throw new Error('Error retrieving all products');
+      }
+    },
+    getCart: async (_, { userId }) => {
+      try {
+        const cart = await Cart.findOne({ userId }).populate('products');
+        return cart;
+      } catch (error) {
+        throw new Error('Error retrieving cart');
+      }
+    }
   },
   Mutation: {
     registerUser: async (_, { input }) => {
@@ -128,7 +143,19 @@ const resolvers = {
         };
       }
     },
-    // Add other mutations...
+    updateCart: async (_, { userId, productId }) => {
+      try {
+        // Your cart update logic here
+        const cart = await Cart.findOneAndUpdate(
+          { userId },
+          { $addToSet: { products: productId } },
+          { new: true }
+        ).populate('products');
+        return cart;
+      } catch (error) {
+        return { success: false, message: error.message || 'Error updating cart' };
+      }
+    }
   },
   // Other resolvers...
 };

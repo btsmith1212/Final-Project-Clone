@@ -3,6 +3,7 @@ const { gql } = require('apollo-server-express');
 const userTypeDefs = gql`
   type Query {
     getUser(userId: ID!): User
+    getCart(userId: ID!): Cart 
   }
 
   type Mutation {
@@ -36,6 +37,7 @@ const userTypeDefs = gql`
 const productTypeDefs = gql`
   type Query {
     getProduct(productId: ID!): Product
+    getAllProducts: [Product]
   }
 
   type Mutation {
@@ -55,6 +57,27 @@ const productTypeDefs = gql`
     price: Float!
   }
 `;
+const cartTypeDefs = gql`
+  type Query {
+    getCart(userId: ID!): Cart
+  }
+
+  type Mutation {
+    updateCart(userId: ID!, productId: ID!): Cart
+  }
+
+  type Cart {
+    _id: ID!
+    user: User  # Assuming you have a User type defined
+    items: [CartItem]
+  }
+
+  type CartItem {
+    product: Product  # Assuming you have a Product type defined
+    quantity: Int
+  }
+`;
+
 
 // Export an array of type definitions
-module.exports = [userTypeDefs, productTypeDefs, /* Add other type definitions as needed... */];
+module.exports = [userTypeDefs, productTypeDefs, cartTypeDefs];
