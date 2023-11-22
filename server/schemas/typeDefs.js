@@ -68,12 +68,12 @@ const cartTypeDefs = gql`
 
   type Cart {
     _id: ID!
-    user: User  # Assuming you have a User type defined
+    user: User 
     items: [CartItem]
   }
 
   type CartItem {
-    product: Product  # Assuming you have a Product type defined
+    product: Product 
     quantity: Int
   }
 `;
