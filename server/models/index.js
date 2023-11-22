@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 const User = require('./User');
 const Product = require('./Product');
@@ -13,4 +14,3 @@ module.exports = {
   Product,
   Cart,
 };
-
