@@ -9,13 +9,13 @@ import Auth from "../utils/auth";
 
 function Signup() {
     const [userFormData, setUserFormData] = useState({ username: "", password: "" });
-    const [addUser] = useMutation(ADD_USER);
+    const [registerUser] = useMutation(ADD_USER);
 
     const handleFormSubmit = async (event) => {
         event.preventDefault();
 
         try {
-            const { data } = await addUser({
+            const { data } = await registerUser({
                 variables: { ...userFormData }
             });
 
@@ -23,7 +23,7 @@ function Signup() {
                 throw new Error("something went wrong!");
             }
 
-            const { token, user } = data.addUser;
+            const { token, user } = data.registerUser;
             console.log(user);
             Auth.login(token);
         } catch (err) {

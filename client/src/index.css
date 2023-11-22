@@ -75,29 +75,10 @@ textarea {
     }
 }
 
-@keyframes slideUp {
-    0% { 
-        transform: translateY(100px); 
-        opacity: 0;
-    }
-
-    100% { 
-        transform: translateY(0); 
-        opacity: 1;
-    }
-}
-
-.header > div {
+.header > div.slideIn {
     animation: slideIn 0.8s ease;
 }
 
-.intro-txt > h2 {
-    animation: slideUp 1s 0.1s ease;
-}
-
-.intro-txt > p {
-    animation: slideUp 1s 0.2s ease;
-}
 
 .bg-overlay {
     background-color: transparent;
@@ -108,12 +89,12 @@ textarea {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-.login-btn {
+.gradation {
     background-image: linear-gradient(#6b9080, #6b9080);
     background-size: 0 100%;
 }
 
-.login-btn:hover {
+.gradation:hover {
     background-size: 100% 100%;
     color: white;
 }

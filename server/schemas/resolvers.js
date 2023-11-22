@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Product = require('../models/Products');
 
-
 const resolvers = {
   Query: {
     getUser: async (_, { userId }) => {

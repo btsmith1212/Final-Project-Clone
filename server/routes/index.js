@@ -6,8 +6,8 @@ const cartRoutes = require('./api/cartRoutes');
 const router = express.Router();
 
 // Use separate route files for different components (users, products, cart, etc.)
-router.use('/users', userRoutes);
-router.use('/products', productRoutes);
-router.use('/cart', cartRoutes);
+router.use('/userRoutes', userRoutes);
+router.use('/productRoutes', productRoutes);
+router.use('/cartRoutes', cartRoutes);
 
 module.exports = router;
