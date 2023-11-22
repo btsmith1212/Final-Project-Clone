@@ -7,7 +7,7 @@ import App from "./App.jsx"
 import Home from "./pages/Home"
 import Products from "./pages/Products"
 import Cart from "./pages/Cart"
-import Payment from "./pages/Payment";
+import ProductPost from "./pages/ProductPost";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
@@ -28,10 +28,10 @@ const router = createBrowserRouter([
                 path: "/cart",
                 element: <Cart />,
             },
-            // {
-            //     path: "/payment",
-            //     element: <Payment />,
-            // },
+            {
+                path: "/post",
+                element: <ProductPost />,
+            },
             {
                 path: "/Login",
                 element: <Login />,
