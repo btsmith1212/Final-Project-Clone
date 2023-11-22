@@ -1,15 +1,18 @@
+
 const mongoose = require('mongoose');
 const User = require('./User');
 const Product = require('./Product');
 const Cart = require('./Cart');
+const Category = require('./Category');
+
 
 // Set up the connection to your MongoDB database
-mongoose.connect('your-mongodb-connection-string', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/ShopSphere', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Export your models for use in other parts of your application
 module.exports = {
   User,
   Product,
   Cart,
+  Category
 };
-
