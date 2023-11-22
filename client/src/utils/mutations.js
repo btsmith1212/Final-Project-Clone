@@ -23,3 +23,45 @@ export const ADD_USER = gql `
         }
     }
 `;
+
+
+export const CREATE_PRODUCT = gql `
+    mutation createProduct($input: ProductInput!) {
+        createProduct(input: $input) {
+            _id
+            name
+            price
+            description
+            category
+        }
+    }
+`;
+
+export const UPDATE_PRODUCT = gql `
+    mutation updateProduct($productId: ID!, $input: ProductInput!) {
+        updateProduct(productId: $productId, input: $input) {
+            _id
+            name
+            price
+            description
+            category
+        }
+    }
+`;
+
+export const UPDATE_CART = gql `
+    mutation updateCart($userId: ID!, $productId: ID!) {
+        updateCart(userId: $userId, productId: $productId) {
+            _id
+            userId
+            products {
+                _id
+                name
+                price
+                description
+                category
+                // Include other fields you want to retrieve for each product in the cart
+            }
+        }
+    }
+`;
