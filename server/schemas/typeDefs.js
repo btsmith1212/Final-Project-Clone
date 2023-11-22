@@ -68,16 +68,37 @@ const cartTypeDefs = gql`
 
   type Cart {
     _id: ID!
-    user: User  # Assuming you have a User type defined
+    user: User 
     items: [CartItem]
   }
 
   type CartItem {
-    product: Product  # Assuming you have a Product type defined
+    product: Product 
     quantity: Int
+  }
+`;
+const categoryTypeDefs = gql`
+  type Query {
+    getCategory(categoryId: ID!): Category
+    getAllCategories: [Category]
+  }
+
+  type Mutation {
+    createCategory(input: CategoryInput): Category
+    updateCategory(categoryId: ID!, input: CategoryInput): Category
+    deleteCategory(categoryId: ID!): Category
+  }
+
+  input CategoryInput {
+    name: String!
+  }
+
+  type Category {
+    _id: ID!
+    name: String!
   }
 `;
 
 
 // Export an array of type definitions
-module.exports = [userTypeDefs, productTypeDefs, cartTypeDefs];
+module.exports = [userTypeDefs, productTypeDefs, cartTypeDefs, categoryTypeDefs];

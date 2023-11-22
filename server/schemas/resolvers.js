@@ -36,7 +36,23 @@ const resolvers = {
       } catch (error) {
         throw new Error('Error retrieving cart');
       }
-    }
+    },
+    getCategory: async (_, { categoryId }) => {
+      try {
+        const category = await Category.findById(categoryId);
+        return category;
+      } catch (error) {
+        throw new Error('Error retrieving category');
+      }
+    },
+    getAllCategories: async () => {
+      try {
+        const categories = await Category.find();
+        return categories;
+      } catch (error) {
+        throw new Error('Error retrieving categories');
+      }
+    },
   },
   Mutation: {
     registerUser: async (_, { input }) => {
@@ -155,6 +171,31 @@ const resolvers = {
       } catch (error) {
         return { success: false, message: error.message || 'Error updating cart' };
       }
+    }
+  },
+  createCategory: async (_, { input }) => {
+    try {
+      const newCategory = new Category(input);
+      const savedCategory = await newCategory.save();
+      return savedCategory;
+    } catch (error) {
+      return { success: false, message: error.message || 'Error creating category' };
+    }
+  },
+  updateCategory: async (_, { categoryId, input }) => {
+    try {
+      const updatedCategory = await Category.findByIdAndUpdate(categoryId, input, { new: true });
+      return updatedCategory;
+    } catch (error) {
+      return { success: false, message: error.message || 'Error updating category' };
+    }
+  },
+  deleteCategory: async (_, { categoryId }) => {
+    try {
+      const deletedCategory = await Category.findByIdAndDelete(categoryId);
+      return deletedCategory;
+    } catch (error) {
+      return { success: false, message: error.message || 'Error deleting category' };
     }
   },
   // Other resolvers...
