@@ -36,6 +36,7 @@ const userTypeDefs = gql`
 const productTypeDefs = gql`
   type Query {
     getProduct(productId: ID!): Product
+    getAllProducts: [Product]
   }
 
   type Mutation {
