@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const User = require('./User');
 const Product = require('./Product');
 const Cart = require('./Cart');
+const Category = require('./Category');
 
 
 // Set up the connection to your MongoDB database
@@ -13,4 +14,5 @@ module.exports = {
   User,
   Product,
   Cart,
+  Category
 };
