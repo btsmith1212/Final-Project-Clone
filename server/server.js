@@ -1,30 +1,38 @@
 const express = require('express');
-const { ApolloServer } = require('apollo-server-express');
-const mongoose = require('mongoose');
-const authenticateUser = require('./utils/auth');
+const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
+const path = require('path');
+const { authMiddleware } = require('./utils/auth');
+
 const { typeDefs, resolvers } = require('./schemas');
+const db = require('./config/connection');
 
+const PORT = process.env.PORT || 3001;
 const app = express();
-
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/ShopSphere', { useNewUrlParser: true, useUnifiedTopology: true });
-
-// Apply middleware for authentication
-app.use(authenticateUser);
-
-// Apply middleware for GraphQL
-const server = new ApolloServer({ typeDefs, resolvers });
-
-async function startServer() {
-  await server.start();
-  server.applyMiddleware({ app });
-}
-
-startServer();
-
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`API server running on port ${PORT}!`);
-  console.log(`GraphQL server running on http://localhost:${PORT}/graphql`);
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
 });
+
+// Create a new instance of an Apollo server with the GraphQL schema
+const startApolloServer = async () => {
+  await server.start();
+
+  app.use(express.urlencoded({ extended: false }));
+  app.use(express.json());
+
+
+  app.use('/graphql', expressMiddleware(server, {
+    context: authMiddleware
+  }));
+
+  db.once('open', () => {
+    app.listen(PORT, () => {
+      console.log(`API server running on port ${PORT}!`);
+      console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
+    });
+  });
+};
+
+// Call the async function to start the server
+startApolloServer();
