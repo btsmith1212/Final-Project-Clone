@@ -9,6 +9,18 @@ export const GET_USER = gql `
     }
 `;
 
+export const All_GET_PRODUCTS = gql `
+    query getAllProducts {
+        getAllProducts {
+            _id
+            name
+            price
+            description
+            category
+        }
+    }
+`;
+
 export const GET_PRODUCT = gql `
     query getProduct($productId: ID!) {
         getProduct(productId: $productId) {
