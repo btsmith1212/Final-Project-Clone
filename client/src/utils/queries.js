@@ -4,7 +4,7 @@ export const QUERY_USER = gql`
   {
     user {
       username
-      carts {
+      cart {
         _id
         products {
           _id
@@ -13,6 +13,7 @@ export const QUERY_USER = gql`
           price
           quantity
           image
+          purchaseQuantity
         }
       }
     }

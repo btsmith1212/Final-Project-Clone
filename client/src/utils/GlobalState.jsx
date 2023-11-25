@@ -24,7 +24,6 @@ const StoreProvider = ({ value = [], ...props }) => {
     useEffect(() => {
         if (!loading && data && Auth.loggedIn()) {
             const { user } = data;
-            
             dispatch({
                 type: "UPDATE_USER",
                 payload: {

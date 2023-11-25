@@ -16,6 +16,7 @@ function ProductsDetail() {
     const [state, dispatch] = useStoreContext();
     const { id } = useParams();
 
+    // Use the useQuery hook for QUERY_USER
     const { data: userData } = useQuery(QUERY_USER);
     const { data } = useQuery(QUERY_PRODUCTS);
 
@@ -23,7 +24,7 @@ function ProductsDetail() {
     const navigate = useNavigate();
 
     const [currentProduct, setCurrentProduct] = useState({});
-
+    console.log("Product Page", state.cart)
     
     useEffect(() => {
         // retrieved from server
@@ -36,7 +37,7 @@ function ProductsDetail() {
             data.products.forEach((product) => {
                 idbPromise("products", "put", product);
             });
-
+            
             setCurrentProduct(data.products.find((product) => product._id === id));
         }
         // get cache from idb
@@ -48,6 +49,17 @@ function ProductsDetail() {
                 });
             });
         }
+
+        // Retrieve cart from IndexedDB and merge with current state
+        idbPromise("cart", "get").then((indexedCart) => {
+            console.log("Indexed Cart:", indexedCart);
+            if (indexedCart !== undefined) {
+                dispatch({
+                    type: UPDATE_CART_QUANTITY,
+                    cart: indexedCart,
+                });
+            }
+        });
     }, [data, state.products.length, dispatch, id]);
 
 
@@ -60,25 +72,39 @@ function ProductsDetail() {
 
         try {
             const { data } = await addCart({
-                variables: { products: [id] },
+                variables: { productId: id },
             });
 
-            const updatedCarts = data.addCart;
-            const updatedProductInCart = updatedCarts.products.find(
+            const updatedProductInCart = data.addCart.cart.products.find(
                 (product) => product._id === id
             );
 
-            dispatch({
-                type: ADD_TO_CART,
-                product: updatedProductInCart,
-            });
-            idbPromise("cart", "put", updatedProductInCart);
+            
+            const isProductInCart = state.cart.find((item) => item._id === id); 
+            console.log(isProductInCart)
+            if (isProductInCart) {
+                dispatch({
+                    type: UPDATE_CART_QUANTITY,
+                    _id: id,
+                    purchaseQuantity: isProductInCart.purchaseQuantity + 1,
+                });
+                // Update the quantity in IndexedDB
+                idbPromise("cart", "put", { ...updatedProductInCart, purchaseQuantity: isProductInCart.purchaseQuantity + 1, });
+            } else {
+                // If the product is not in the cart, add it with the quantity
+                dispatch({
+                    type: ADD_TO_CART,
+                    product: { ...currentProduct, purchaseQuantity: 1 },
+                });
+                idbPromise('cart', 'put', { ...currentProduct, purchaseQuantity: 1 });
+            }
 
             toast.success("Item added to cart!");
         } catch (error) {
             console.error("Error adding to cart:", error);
         }
     };
+
 
     return (
         <section className="flex flex-col justify-center items-center px-5">
@@ -97,6 +123,7 @@ function ProductsDetail() {
                             <p className="mt-7 text-lg">
                                 <strong>Price:</strong>${currentProduct.price}{" "}
                             </p>
+
 
                             <button
                                 className="mt-7 py-3 px-5 border border-olive rounded-lg text-olive text-center text-sm bg-no-repeat duration-300 gradation"
