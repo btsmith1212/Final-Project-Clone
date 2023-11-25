@@ -23,14 +23,14 @@ function Login() {
                 variables: { ...userFormData },
             });
 
-            Auth.login(data.login.token);
+            Auth.login(data.loginUser.token);
         } catch (error) {
             console.error(error);
         }
     };
 
     return (
-        <section>
+        <section className="flex flex-col justify-center items-center">
             <UserInfo title={"Login"} page={"Login"} loginFormSubmit={handleFormSubmit} handleInputChange={handleInputChange}/>
         </section>
     )

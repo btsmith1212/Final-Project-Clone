@@ -6,7 +6,6 @@ export const LOGIN_USER = gql `
             token
             user {
                 _id
-                username
             }
         }
     }
@@ -24,6 +23,45 @@ export const ADD_USER = gql `
     }
 `;
 
+export const ADD_CART = gql `
+    mutation addCart($productId: ID!) {
+        addCart(productId: $productId) {
+            _id
+            cart {
+                products {
+                    _id
+                    name
+                    description
+                    price
+                    quantity
+                    category {
+                        name
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const REMOVE_CART = gql `
+    mutation removeCart($productId: ID!) {
+        removeCart(productId: $productId) {
+            _id
+            cart {
+                products {
+                    _id
+                    name
+                    description
+                    price
+                    quantity
+                    category {
+                        name
+                    }
+                }
+            }
+        }
+    }
+`;
 
 export const CREATE_PRODUCT = gql `
     mutation createProduct($input: ProductInput!) {
@@ -60,7 +98,6 @@ export const UPDATE_CART = gql `
                 price
                 description
                 category
-               
             }
         }
     }

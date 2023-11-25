@@ -3,7 +3,7 @@ import ProductItem from "./ProductItem";
 import { useStoreContext } from "../utils/GlobalState";
 import { UPDATE_PRODUCTS } from "../utils/actions";
 import { useQuery } from "@apollo/client";
-import { All_GET_PRODUCTS } from "../utils/queries";
+import { QUERY_PRODUCTS } from "../utils/queries";
 import { idbPromise } from "../utils/helpers";
 
 function ProductList() {
@@ -11,7 +11,7 @@ function ProductList() {
 
     const { currentCategory } = state;
 
-    const { loading, data } = useQuery(All_GET_PRODUCTS);
+    const { loading, data } = useQuery(QUERY_PRODUCTS);
 
     useEffect(() => {
         if (data) {
@@ -43,9 +43,9 @@ function ProductList() {
     }
 
     return (
-        <div id="products" className="py-10">
+        <div id="products" className="mt-10">
             {state.products.length &&
-                <ul className="flex flex justify-center items-center">
+                <ul className="flex flex-wrap justify-center items-center">
                     {filterProducts().map((product) => (
                         <ProductItem
                             key={product._id}
