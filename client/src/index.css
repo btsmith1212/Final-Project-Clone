@@ -29,6 +29,7 @@ form {
 button,
 input {
     line-height: normal;
+    background-color: transparent;
 }
 
 button,

@@ -10,7 +10,7 @@ export default {
       "ivory": "#fbf8f3",
       "white": "#ffffff",
       "olive": "#6b9080",
-      "gray": "#e5e5e5"
+      "gray": "#e9ecef"
     },
     extend: {},
   },

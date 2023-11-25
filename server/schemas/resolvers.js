@@ -28,7 +28,7 @@ const resolvers = {
     user: async (parent, args, context) => {
       if (context.user) {
         const user = await User.findById(context.user._id).populate({
-          path: 'carts.products',
+          path: 'cart.products',
           populate: 'category'
         });
         return user;
@@ -38,10 +38,10 @@ const resolvers = {
     },
     checkout: async (parent, args, context) => {
       const url = new URL(context.headers.referer).origin;
-      const order = new Order({ products: args.products });
+      const cart = new Cart({ products: args.products });
       const line_items = [];
 
-      const { products } = await order.populate('products');
+      const { products } = await cart.populate('products');
 
       for (let i = 0; i < products.length; i++) {
         const product = await stripe.products.create({
@@ -104,58 +104,45 @@ const resolvers = {
       return { token, user };
     },
 
-    addCart: async (parent, { products }, context) => {
+    addCart: async (_, { productId }, context) => {
+      const product = await Product.findById(productId);
+      if (!product) {
+        throw new Error('Product not found');
+      }
+      console.log(product)
       if (context.user) {
-        const cart = new Cart({ products });
-
-        await User.findByIdAndUpdate(context.user._id, {
-          $push: {
-            carts: cart
+        const user = await User.findByIdAndUpdate(
+          context.user._id,
+          {
+            $push: { 'cart.products': product }
+          },
+          {
+            new: true,
           }
-        });
-
-        // Fetch the updated user data to get the populated cart
-        const updatedUser = await User.findById(context.user._id).populate({
-          path: 'carts.products',
+        ).populate({
+          path: 'cart.products',
           populate: 'category'
         });
 
-        // Return the populated cart
-        return updatedUser.carts.find(c => c._id.toString() === cart._id.toString());
+        return user;
       }
-
-      throw AuthenticationError;
     },
 
     removeCart: async (_, { productId }, context) => {
-      if (!context.user) {
-        throw AuthenticationError;
-      }
-
-      try {
-        const updatedUser = await User.findOneAndUpdate(
+      if (context.user) {
+        const user = await User.findByIdAndUpdate(
+          context.user._id,
           {
-            _id: context.user._id,
-            'carts.products': productId
+            $pull: { 'cart.products': { _id: productId } }
           },
           {
-            $pull: {
-              'carts.$.products': productId
-            }
-          },
-          { new: true }
-        ).populate({
-          path: 'carts.products',
-          populate: 'category'
-        });
+            new: true,
+          }
+        )
 
-        
-        return updatedUser;
-      } catch (error) {
-        console.error('Error removing from cart:', error);
+        return user;
       }
     },
-
   //   createProduct: async (_, { input }) => {
   //     try {
   //       // Your product creation logic here

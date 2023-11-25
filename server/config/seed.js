@@ -143,11 +143,6 @@ db.once("open", async () => {
   await User.create({
     username: "joy",
     password: "password123",
-    carts: [
-      {
-        products: [products[0]._id, products[1]._id],
-      },
-    ],
   });
 
   await User.create({

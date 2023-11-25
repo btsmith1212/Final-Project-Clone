@@ -14,11 +14,9 @@ import {
 export const reducer = (state, action) => {
     switch (action.type) {
         case UPDATE_USER:
-            console.log('UPDATE_USER action dispatched:', action.payload);
             return {
                 ...state,
-                user: action.payload,
-                cart: action.payload.carts || [],
+                user: action.payload
             };
 
         case UPDATE_PRODUCTS:
@@ -44,7 +42,10 @@ export const reducer = (state, action) => {
                 ...state,
                 cart: state.cart.map((product) => {
                     if (action._id === product._id) {
-                        product.purchaseQuantity = action.purchaseQuantity;
+                        return {
+                            ...product,
+                            purchaseQuantity: action.purchaseQuantity,
+                        };
                     }
                     return product;
                 }),

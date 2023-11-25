@@ -24,17 +24,19 @@ export const ADD_USER = gql `
 `;
 
 export const ADD_CART = gql `
-    mutation addCart($products: [ID]!) {
-        addCart(products: $products) {
+    mutation addCart($productId: ID!) {
+        addCart(productId: $productId) {
             _id
-            products {
-                _id
-                name
-                description
-                price
-                quantity
-                category {
+            cart {
+                products {
+                    _id
                     name
+                    description
+                    price
+                    quantity
+                    category {
+                        name
+                    }
                 }
             }
         }
@@ -45,8 +47,7 @@ export const REMOVE_CART = gql `
     mutation removeCart($productId: ID!) {
         removeCart(productId: $productId) {
             _id
-            carts {
-                _id
+            cart {
                 products {
                     _id
                     name

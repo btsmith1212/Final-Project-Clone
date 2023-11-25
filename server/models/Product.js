@@ -38,6 +38,10 @@ const productSchema = new Schema({
     min: 0,
     default: 0
   },
+  purchaseQuantity: {
+    type: Number,
+    default: 1
+  },
   category: {
     type: Schema.Types.ObjectId,
     ref: 'Category',
