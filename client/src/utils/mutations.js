@@ -60,7 +60,7 @@ export const UPDATE_CART = gql `
                 price
                 description
                 category
-                // Include other fields you want to retrieve for each product in the cart
+               
             }
         }
     }

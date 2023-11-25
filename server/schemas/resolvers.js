@@ -173,32 +173,32 @@ const resolvers = {
       }
     }
   },
-  createCategory: async (_, { input }) => {
-    try {
-      const newCategory = new Category(input);
-      const savedCategory = await newCategory.save();
-      return savedCategory;
-    } catch (error) {
-      return { success: false, message: error.message || 'Error creating category' };
-    }
-  },
-  updateCategory: async (_, { categoryId, input }) => {
-    try {
-      const updatedCategory = await Category.findByIdAndUpdate(categoryId, input, { new: true });
-      return updatedCategory;
-    } catch (error) {
-      return { success: false, message: error.message || 'Error updating category' };
-    }
-  },
-  deleteCategory: async (_, { categoryId }) => {
-    try {
-      const deletedCategory = await Category.findByIdAndDelete(categoryId);
-      return deletedCategory;
-    } catch (error) {
-      return { success: false, message: error.message || 'Error deleting category' };
-    }
-  },
-  // Other resolvers...
+//   createCategory: async (_, { input }) => {
+//     try {
+//       const newCategory = new Category(input);
+//       const savedCategory = await newCategory.save();
+//       return savedCategory;
+//     } catch (error) {
+//       return { success: false, message: error.message || 'Error creating category' };
+//     }
+//   },
+//   updateCategory: async (_, { categoryId, input }) => {
+//     try {
+//       const updatedCategory = await Category.findByIdAndUpdate(categoryId, input, { new: true });
+//       return updatedCategory;
+//     } catch (error) {
+//       return { success: false, message: error.message || 'Error updating category' };
+//     }
+//   },
+//   deleteCategory: async (_, { categoryId }) => {
+//     try {
+//       const deletedCategory = await Category.findByIdAndDelete(categoryId);
+//       return deletedCategory;
+//     } catch (error) {
+//       return { success: false, message: error.message || 'Error deleting category' };
+//     }
+//   },
+//   // Other resolvers...
 };
 
 module.exports = resolvers;
