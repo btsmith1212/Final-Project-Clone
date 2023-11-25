@@ -1,56 +1,27 @@
 import { Link } from "react-router-dom";
-import { useStoreContext } from "../utils/GlobalState";
-import { ADD_TO_CART } from "../utils/actions";
-import { idbPromise } from "../utils/helpers";
 
 function ProductItem(item) {
-    const [state, dispatch] = useStoreContext();
-
     const {
-        image,
         name,
         _id,
-        price
+        price,
+        quantity
     } = item;
 
-    const { cart } = state
-
-    const addToCart = () => {
-        const itemInCart = cart.find((cartItem) => cartItem._id === _id)
-        // if (itemInCart) {
-        //     dispatch({
-        //         type: UPDATE_CART_QUANTITY,
-        //         _id: _id,
-        //         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
-        //     });
-        //     idbPromise('cart', 'put', {
-        //         ...itemInCart,
-        //         purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
-        //     });
-        // } else {
-            if(itemInCart){
-                dispatch({
-                    type: ADD_TO_CART,
-                    product: { ...item, purchaseQuantity: 1 }
-                });
-                idbPromise('cart', 'put', { ...item, purchaseQuantity: 1 });
-            }
-        // }
-    }
-
     return (
-        <li className="card px-1 py-1">
-            <Link to={`/products/${_id}`}>
-                <img
-                    alt={name}
-                    src={`/images/${image}`}
-                />
-                <p>{name}</p>
-            </Link>
-            <div>
-                <span>${price}</span>
+        <li className="basis-full md:basis-1/2 lg:basis-1/3 mt-5 p-2">
+            <img
+                alt={name}
+                // src={`/images/${image}`}
+                className="w-full h-40 bg-gray"
+            />
+            <div className="mt-3">
+                <p className="text-lg">{name}</p>
+                <div>{quantity} in stock</div>
+                <span>Price: ${price}</span>
             </div>
-            <button onClick={addToCart}>Add to cart</button>
+
+            <Link to={`/products/${_id}`} className="mt-2 py-2 px-3 border border-olive rounded-lg text-olive text-center text-sm bg-no-repeat duration-300 gradation">View Details</Link>
         </li>
     );
 }

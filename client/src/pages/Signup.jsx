@@ -41,7 +41,7 @@ function Signup() {
         setUserFormData({ ...userFormData, [name]: value });
     };
     return (
-        <section>
+        <section className="flex flex-col justify-center items-center">
             <UserInfo title={"Signup"} page={"Signup"} signupFormSubmit={handleFormSubmit} handleInputChange={handleInputChange} />
         </section>
     )

@@ -6,7 +6,6 @@ export const LOGIN_USER = gql `
             token
             user {
                 _id
-                username
             }
         }
     }
@@ -24,6 +23,44 @@ export const ADD_USER = gql `
     }
 `;
 
+export const ADD_CART = gql `
+    mutation addCart($products: [ID]!) {
+        addCart(products: $products) {
+            _id
+            products {
+                _id
+                name
+                description
+                price
+                quantity
+                category {
+                    name
+                }
+            }
+        }
+    }
+`;
+
+export const REMOVE_CART = gql `
+    mutation removeCart($productId: ID!) {
+        removeCart(productId: $productId) {
+            _id
+            carts {
+                _id
+                products {
+                    _id
+                    name
+                    description
+                    price
+                    quantity
+                    category {
+                        name
+                    }
+                }
+            }
+        }
+    }
+`;
 
 export const CREATE_PRODUCT = gql `
     mutation createProduct($input: ProductInput!) {
@@ -60,7 +97,6 @@ export const UPDATE_CART = gql `
                 price
                 description
                 category
-                // Include other fields you want to retrieve for each product in the cart
             }
         }
     }

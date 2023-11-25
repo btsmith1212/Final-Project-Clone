@@ -1,204 +1,232 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { User, Product, Cart, Category } = require('../models');
+const { User, Product, Category, Cart } = require('../models');
+const { signToken, AuthenticationError } = require('../utils/auth');
 
 
 const resolvers = {
   Query: {
-    getUser: async (_, { userId }) => {
-      try {
-        const user = await User.findById(userId);
+    categories: async () => {
+      return await Category.find();
+    },
+    products: async (parent, { category, name }) => {
+      const params = {};
+
+      if (category) {
+        params.category = category;
+      }
+
+      if (name) {
+        params.name = {
+          $regex: name
+        };
+      }
+
+      return await Product.find(params).populate('category');
+    },
+    product: async (parent, { _id }) => {
+      return await Product.findById(_id).populate('category');
+    },
+    user: async (parent, args, context) => {
+      if (context.user) {
+        const user = await User.findById(context.user._id).populate({
+          path: 'carts.products',
+          populate: 'category'
+        });
         return user;
-      } catch (error) {
-        throw new Error("Error retrieving user");
       }
-    },
-    getProduct: async (_, { productId }) => {
-      try {
-        const product = await Product.findById(productId);
-        return product;
-      } catch (error) {
-        throw new Error("Error retrieving product");
-      }
-    },
-    getAllProducts: async () => {
-      try {
-        const products = await Product.find();
-        return products;
-      } catch (error) {
-        throw new Error('Error retrieving all products');
-      }
-    },
-    getCart: async (_, { userId }) => {
-      try {
-        const cart = await Cart.findOne({ userId }).populate('products');
-        return cart;
-      } catch (error) {
-        throw new Error('Error retrieving cart');
-      }
-    },
-    getCategory: async (_, { categoryId }) => {
-      try {
-        const category = await Category.findById(categoryId);
-        return category;
-      } catch (error) {
-        throw new Error('Error retrieving category');
-      }
-    },
-    getAllCategories: async () => {
-      try {
-        const categories = await Category.find();
-        return categories;
-      } catch (error) {
-        throw new Error('Error retrieving categories');
-      }
-    },
-  },
-  Mutation: {
-    registerUser: async (_, { input }) => {
-      try {
-        const { username, password } = input;
 
-        // Check if the username is already taken
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-          throw new Error("Username is already taken");
-        }
+      throw AuthenticationError;
+    },
+    checkout: async (parent, args, context) => {
+      const url = new URL(context.headers.referer).origin;
+      const order = new Order({ products: args.products });
+      const line_items = [];
 
-        // Hash the password before saving it to the database
-        const hashedPassword = await bcrypt.hash(password, 10);
+      const { products } = await order.populate('products');
 
-        // Create a new user in the database
-        const newUser = new User({
-          username,
-          password: hashedPassword,
+      for (let i = 0; i < products.length; i++) {
+        const product = await stripe.products.create({
+          name: products[i].name,
+          description: products[i].description,
+          images: [`${url}/images/${products[i].image}`]
         });
 
-        await newUser.save();
+        const price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: products[i].price * 100,
+          currency: 'usd',
+        });
 
-        // Optionally, generate a JWT token for the newly registered user
-        const token = jwt.sign(
-          { userId: newUser.id, username: newUser.username },
-          "your-secret-key",
-          {
-            expiresIn: "1h", // Set the expiration time as needed
+        line_items.push({
+          price: price.id,
+          quantity: 1
+        });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items,
+        mode: 'payment',
+        success_url: `${url}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${url}/`
+      });
+
+      return { session: session.id };
+    },
+  },
+
+  Mutation: {
+    registerUser: async (parent, { username, password }) => {
+      // Check if the username is already taken
+      const existingUser = await User.findOne({ username });
+      if (existingUser) {
+        throw new Error("Username is already taken");
+      }
+
+      const user = await User.create({ username, password });
+      const token = signToken(user);
+
+      return { token, user };
+    },
+
+    loginUser: async (parent, { username, password }) => {
+      const user = await User.findOne({ username });
+
+      if (!user) {
+        throw AuthenticationError;
+      }
+
+      const correctPw = await user.isCorrectPassword(password);
+      if (!correctPw) {
+        throw AuthenticationError;
+      }
+
+      const token = signToken(user);
+      return { token, user };
+    },
+
+    addCart: async (parent, { products }, context) => {
+      if (context.user) {
+        const cart = new Cart({ products });
+
+        await User.findByIdAndUpdate(context.user._id, {
+          $push: {
+            carts: cart
           }
-        );
+        });
 
-        return {
-          success: true,
-          message: "User registered successfully",
-          token,
-        };
-      } catch (error) {
-        return {
-          success: false,
-          message: error.message || "Error registering user",
-        };
+        // Fetch the updated user data to get the populated cart
+        const updatedUser = await User.findById(context.user._id).populate({
+          path: 'carts.products',
+          populate: 'category'
+        });
+
+        // Return the populated cart
+        return updatedUser.carts.find(c => c._id.toString() === cart._id.toString());
       }
+
+      throw AuthenticationError;
     },
 
-    loginUser: async (_, { input }) => {
+    removeCart: async (_, { productId }, context) => {
+      if (!context.user) {
+        throw AuthenticationError;
+      }
+
       try {
-        const { username, password } = input;
-
-        // Find the user by username
-        const user = await User.findOne({ username });
-        if (!user) {
-          throw new Error("User not found");
-        }
-
-        // Compare the provided password with the hashed password in the database
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-          throw new Error("Invalid password");
-        }
-
-        // Generate JWT token for the authenticated user
-        const token = jwt.sign(
-          { userId: user.id, username: user.username },
-          "your-secret-key",
+        const updatedUser = await User.findOneAndUpdate(
           {
-            expiresIn: "1h", // Set the expiration time as needed
-          }
-        );
-
-        return { success: true, token };
-      } catch (error) {
-        return { success: false, message: error.message || "Error logging in" };
-      }
-    },
-
-    createProduct: async (_, { input }) => {
-      try {
-        // Your product creation logic here
-        const newProduct = new Product(input);
-        const savedProduct = await newProduct.save();
-        return savedProduct;
-      } catch (error) {
-        return {
-          success: false,
-          message: error.message || "Error creating product",
-        };
-      }
-    },
-
-    updateProduct: async (_, { productId, input }) => {
-      try {
-        // Your product update logic here
-        const updatedProduct = await Product.findByIdAndUpdate(
-          productId,
-          input,
+            _id: context.user._id,
+            'carts.products': productId
+          },
+          {
+            $pull: {
+              'carts.$.products': productId
+            }
+          },
           { new: true }
-        );
-        return updatedProduct;
+        ).populate({
+          path: 'carts.products',
+          populate: 'category'
+        });
+
+        
+        return updatedUser;
       } catch (error) {
-        return {
-          success: false,
-          message: error.message || "Error updating product",
-        };
+        console.error('Error removing from cart:', error);
       }
     },
-    updateCart: async (_, { userId, productId }) => {
-      try {
-        // Your cart update logic here
-        const cart = await Cart.findOneAndUpdate(
-          { userId },
-          { $addToSet: { products: productId } },
-          { new: true }
-        ).populate('products');
-        return cart;
-      } catch (error) {
-        return { success: false, message: error.message || 'Error updating cart' };
-      }
-    }
-  },
-  createCategory: async (_, { input }) => {
-    try {
-      const newCategory = new Category(input);
-      const savedCategory = await newCategory.save();
-      return savedCategory;
-    } catch (error) {
-      return { success: false, message: error.message || 'Error creating category' };
-    }
-  },
-  updateCategory: async (_, { categoryId, input }) => {
-    try {
-      const updatedCategory = await Category.findByIdAndUpdate(categoryId, input, { new: true });
-      return updatedCategory;
-    } catch (error) {
-      return { success: false, message: error.message || 'Error updating category' };
-    }
-  },
-  deleteCategory: async (_, { categoryId }) => {
-    try {
-      const deletedCategory = await Category.findByIdAndDelete(categoryId);
-      return deletedCategory;
-    } catch (error) {
-      return { success: false, message: error.message || 'Error deleting category' };
-    }
-  },
+
+  //   createProduct: async (_, { input }) => {
+  //     try {
+  //       // Your product creation logic here
+  //       const newProduct = new Product(input);
+  //       const savedProduct = await newProduct.save();
+  //       return savedProduct;
+  //     } catch (error) {
+  //       return {
+  //         success: false,
+  //         message: error.message || "Error creating product",
+  //       };
+  //     }
+  //   },
+
+  //   updateProduct: async (_, { productId, input }) => {
+  //     try {
+  //       // Your product update logic here
+  //       const updatedProduct = await Product.findByIdAndUpdate(
+  //         productId,
+  //         input,
+  //         { new: true }
+  //       );
+  //       return updatedProduct;
+  //     } catch (error) {
+  //       return {
+  //         success: false,
+  //         message: error.message || "Error updating product",
+  //       };
+  //     }
+  //   },
+  //   updateCart: async (_, { userId, productId }) => {
+  //     try {
+  //       // Your cart update logic here
+  //       const cart = await Cart.findOneAndUpdate(
+  //         { userId },
+  //         { $addToSet: { products: productId } },
+  //         { new: true }
+  //       ).populate('products');
+  //       return cart;
+  //     } catch (error) {
+  //       return { success: false, message: error.message || 'Error updating cart' };
+  //     }
+  //   }
+  // },
+  // createCategory: async (_, { input }) => {
+  //   try {
+  //     const newCategory = new Category(input);
+  //     const savedCategory = await newCategory.save();
+  //     return savedCategory;
+  //   } catch (error) {
+  //     return { success: false, message: error.message || 'Error creating category' };
+  //   }
+  // },
+  // updateCategory: async (_, { categoryId, input }) => {
+  //   try {
+  //     const updatedCategory = await Category.findByIdAndUpdate(categoryId, input, { new: true });
+  //     return updatedCategory;
+  //   } catch (error) {
+  //     return { success: false, message: error.message || 'Error updating category' };
+  //   }
+  // },
+  // deleteCategory: async (_, { categoryId }) => {
+  //   try {
+  //     const deletedCategory = await Category.findByIdAndDelete(categoryId);
+  //     return deletedCategory;
+  //   } catch (error) {
+  //     return { success: false, message: error.message || 'Error deleting category' };
+  //   }
+  // },
   // Other resolvers...
+  }
 };
 
 module.exports = resolvers;

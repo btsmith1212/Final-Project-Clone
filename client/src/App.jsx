@@ -8,6 +8,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { StoreProvider } from "./utils/GlobalState";
 import { useState, useEffect } from "react";
+import { Toaster } from 'react-hot-toast';
 
 import Loading from "./components/Loading";
 import Header from "./components/Header";
@@ -91,6 +92,7 @@ function App() {
                         <Outlet handleImageUpload={handleImageUpload} />
                         <Footer />
                     </main>
+                    <Toaster />
                     </>
                 )}
             </StoreProvider>
