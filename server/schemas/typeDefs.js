@@ -1,104 +1,69 @@
 const { gql } = require('apollo-server-express');
 
-const userTypeDefs = gql`
-  type Query {
-    getUser(userId: ID!): User
-    getCart(userId: ID!): Cart 
-  }
-
-  type Mutation {
-    registerUser(input: RegisterInput): AuthResponse
-    loginUser(input: LoginInput): AuthResponse
-  }
-
-  input RegisterInput {
-    username: String!
-    password: String!
-  }
-
-  input LoginInput {
-    username: String!
-    password: String!
-  }
-
-  type AuthResponse {
-    success: Boolean!
-    message: String
-    token: String
-  }
-
+const typeDefs = gql `
   type User {
     _id: ID!
     username: String!
-    password: String!
-  }
-`;
-
-const productTypeDefs = gql`
-  type Query {
-    getProduct(productId: ID!): Product
-    getAllProducts: [Product]
-  }
-
-  type Mutation {
-    createProduct(input: ProductInput): Product
-    updateProduct(productId: ID!, input: ProductInput): Product
-    deleteProduct(productId: ID!): Product
-  }
-
-  input ProductInput {
-    name: String!
-    price: Float!
+    carts: [Cart]
   }
 
   type Product {
-    _id: ID!
-    name: String!
-    price: Float!
-  }
-`;
-const cartTypeDefs = gql`
-  type Query {
-    getCart(userId: ID!): Cart
-  }
-
-  type Mutation {
-    updateCart(userId: ID!, productId: ID!): Cart
+    _id: ID
+    name: String
+    description: String
+    image: String
+    quantity: Int
+    price: Float
+    category: Category
   }
 
   type Cart {
-    _id: ID!
-    user: User 
-    items: [CartItem]
+    _id: ID
+    products: [Product]
   }
 
-  type CartItem {
-    product: Product 
-    quantity: Int
-  }
-`;
-const categoryTypeDefs = gql`
-  type Query {
-    getCategory(categoryId: ID!): Category
-    getAllCategories: [Category]
-  }
-
-  type Mutation {
-    createCategory(input: CategoryInput): Category
-    updateCategory(categoryId: ID!, input: CategoryInput): Category
-    deleteCategory(categoryId: ID!): Category
-  }
-
-  input CategoryInput {
-    name: String!
+  type Checkout {
+    session: ID
   }
 
   type Category {
     _id: ID!
     name: String!
   }
+
+  type Auth {
+    token: ID
+    user: User
+  }
+
+  type Query {
+    products(category: ID, name: String): [Product]
+    product(_id: ID!): Product
+    categories: [Category]
+    user: User
+    cart(_id: ID!): Cart
+    checkout(products: [ID] !): Checkout
+  }
+
+  type Mutation {
+    registerUser(username: String!, password: String!): Auth
+    loginUser(username: String!, password: String!): Auth
+    addCart(products: [ID] !): Cart
+    removeCart(productId: ID !): User
+    createProduct(input: ProductInput!): Product
+    updateProduct(productId: ID!, input: ProductInput!): Product
+  }
+
+  input ProductInput {
+    name: String!
+    price: Float!
+    description: String
+    category: String
+  }
+
+  input CategoryInput {
+    name: String!
+  }
 `;
 
-
-// Export an array of type definitions
-module.exports = [userTypeDefs, productTypeDefs, cartTypeDefs, categoryTypeDefs];
+module.exports = typeDefs;

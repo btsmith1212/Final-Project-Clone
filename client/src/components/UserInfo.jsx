@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 function UserInfo({ title, page, handleInputChange, loginFormSubmit, signupFormSubmit }) {
     return (
-        <div className="w-full h-full flex flex-col justify-center items-center" onSubmit={page === "Login" ? loginFormSubmit : signupFormSubmit}>
+        <div onSubmit={page === "Login" ? loginFormSubmit : signupFormSubmit}>
             <h2 className="text-xl text-center font-bold">{title}</h2>
             <form className="flex flex-col items-center justify-center mt-5" >
-                <input className="px-3 py-2 border border-green-gray w-72" type="text" placeholder="Username" onChange={handleInputChange} />
-                <input className="px-3 py-2 border border-green-gray w-72 mt-3" type="password" placeholder="Password" onChange={handleInputChange} />
+                <input className="px-3 py-2 border border-gray w-72" type="text" name="username" placeholder="Username" onChange={handleInputChange} />
+                <input className="px-3 py-2 border border-gray w-72 mt-3" type="password" name="password" placeholder="Password" onChange={handleInputChange} />
                 
                 <button className="px-3 py-2 w-72 mt-3 bg-olive text-white cursor-pointer" type="submit">
                     {page === "Login" ? "Login" : "Signup"}

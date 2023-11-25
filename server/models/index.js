@@ -6,4 +6,4 @@ const Category = require('./Category');
 
 
 // Export your models for use in other parts of your application
-module.exports = { User, Product, Cart, Category };
+module.exports = { User, Product, Category, Cart };

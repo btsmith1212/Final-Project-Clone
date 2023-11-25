@@ -9,19 +9,19 @@ db.once("open", async () => {
 
   const categories = await Category.insertMany([
     {
-      name: "Clothing and Accessories",
+      name: "Clothing",
     },
     {
-      name: "Furniture and Home Decor",
+      name: "Home Decor",
     },
     {
-      name: "Books and Media",
+      name: "Media",
     },
     {
-      name: "Plants and Consumables",
+      name: "Plants",
     },
     {
-      name: "Handmade and Ethnic",
+      name: "Handmade",
     },
   ]);
 
@@ -143,9 +143,9 @@ db.once("open", async () => {
   await User.create({
     username: "joy",
     password: "password123",
-    orders: [
+    carts: [
       {
-        products: [products[0]._id, products[0]._id, products[1]._id],
+        products: [products[0]._id, products[1]._id],
       },
     ],
   });

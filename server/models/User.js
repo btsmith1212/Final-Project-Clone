@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const Cart = require('./Cart');
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  carts: [Cart.schema]
 });
 
 // Hash the password before saving it to the database
@@ -19,6 +21,10 @@ userSchema.pre('save', async function (next) {
   }
   next();
 });
+
+userSchema.methods.isCorrectPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
 const User = mongoose.model('User', userSchema);
 
