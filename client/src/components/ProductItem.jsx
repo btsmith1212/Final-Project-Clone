@@ -5,6 +5,7 @@ function ProductItem(item) {
         name,
         _id,
         price,
+        image,
         quantity
     } = item;
 
@@ -12,7 +13,7 @@ function ProductItem(item) {
         <li className="basis-full md:basis-1/2 lg:basis-1/3 mt-5 p-2">
             <img
                 alt={name}
-                // src={`/images/${image}`}
+                 src={`/images/${image}`}
                 className="w-full h-40 bg-gray"
             />
             <div className="mt-3">
@@ -21,7 +22,12 @@ function ProductItem(item) {
                 <span>Price: ${price}</span>
             </div>
 
-            <Link to={`/products/${_id}`} className="mt-2 py-2 px-3 border border-olive rounded-lg text-olive text-center text-sm bg-no-repeat duration-300 gradation">View Details</Link>
+            <Link
+                to={{
+                    pathname: `/products/${_id}`,
+                    state: { image }, // Pass the image as state
+                }}
+                 className="mt-2 py-2 px-3 border border-olive rounded-lg text-olive text-center text-sm bg-no-repeat duration-300 gradation">View Details</Link>
         </li>
     );
 }

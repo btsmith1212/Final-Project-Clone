@@ -11,10 +11,13 @@ import { idbPromise } from "../utils/helpers";
 
 import Auth from "../utils/auth";
 import toast from "react-hot-toast";
+import { useLocation } from "react-router-dom";
 
 function ProductsDetail() {
     const [state, dispatch] = useStoreContext();
     const { id } = useParams();
+    const location = useLocation();
+    const { image } = location;
 
     // Use the useQuery hook for QUERY_USER
     const { data: userData } = useQuery(QUERY_USER);
@@ -114,7 +117,7 @@ function ProductsDetail() {
 
                     <div className="flex md:flex-row flex-col justify-center items-center mt-10">
                         <div className="basis-1/2 sm:h-80 h-60 bg-gray">
-                            {/* <img src={`/images/${currentProduct.image}`} alt={currentProduct.name} /> */}
+                            {<img src={`/images/${currentProduct.image}`} alt={currentProduct.name} />}
                         </div>
 
                         <div className="basis-1/2 md:pl-10">
