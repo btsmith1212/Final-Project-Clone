@@ -51,6 +51,7 @@ const typeDefs = gql `
     loginUser(username: String!, password: String!): Auth
     addCart(productId: ID!): User
     removeCart(productId: ID!): User
+    updateCart(productId: ID!, quantity: Int!): User
     createProduct(input: ProductInput!): Product
     deleteProduct(productId: ID!): Product
   }
