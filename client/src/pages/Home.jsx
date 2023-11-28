@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import plantImg from "../assets/plant-img.svg";
 import clothesImg from "../assets/clothes-img.svg";
-import artImg from "../assets/art-img.svg";
 
 function Home(){
     
@@ -44,13 +43,6 @@ function Home(){
                                     <Link to="/products" className="w-40 mt-5 py-4 border border-olive rounded-lg text-olive text-center bg-no-repeat duration-300 gradation">Buy Now</Link>
                                 </div>
                                 <img className="md:w-1/2 max-w-xs" src={clothesImg} alt="several clothes hanging from a hanger" />
-                            </li>
-                            <li className="flex md:flex-row flex-col justify-between items-center mt-16">
-                                <img className="md:w-1/2 max-w-xs mr-5" src={artImg} alt="two plants image" />
-                                <div className="md:w-1/2">
-                                    <p className="md:text-2xl text-lg ">Our art collection adds a touch of creativity and uniqueness to your space</p>
-                                    <Link to="/products" className="w-40 mt-5 py-4 border border-olive rounded-lg text-olive text-center bg-no-repeat duration-300 gradation">Buy Now</Link>
-                                </div>
                             </li>
                         </ul>
                     </div>

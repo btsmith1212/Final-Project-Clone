@@ -27,10 +27,12 @@ const resolvers = {
     },
     user: async (parent, args, context) => {
       if (context.user) {
-        const user = await User.findById(context.user._id).populate({
+        const user = await User.findById(context.user._id)
+        .populate({
           path: 'cart.products',
           populate: 'category'
-        });
+        })
+        .populate('addedProducts');
         return user;
       }
 
@@ -109,7 +111,7 @@ const resolvers = {
       if (!product) {
         throw new Error('Product not found');
       }
-      console.log(product)
+
       if (context.user) {
         const user = await User.findByIdAndUpdate(
           context.user._id,
@@ -144,21 +146,37 @@ const resolvers = {
       }
     },
 
-    createProduct: async (_, { input }) => {
+    createProduct: async (_, { input }, context) => {
       try {
-        const category = await Category.findOne({ name: input.category.name });
-        if (!category) {
-          throw new Error("Category not found");
-        }
-        console.log(category)
-      
-        // Create the product with the provided input
+        const { category, ...productInput } = input;
+
+        // Find the category by name
+        const categoryObj = await Category.findOne({ name: category });
+
+        // Create the product with the provided input and category
         const newProduct = new Product({
-          ...input,
-          category: category ? category._id : null,
+          ...productInput,
+          category: categoryObj._id,
         });
+        
         const savedProduct = await newProduct.save();
-        return savedProduct;
+
+        // Associate the created product with the user's addedProducts
+        await User.findByIdAndUpdate(
+          context.user._id, {
+            $push: {
+              addedProducts: savedProduct._id
+            },
+          }, {
+            new: true
+          }
+        );
+
+        const populatedProduct = await Product.populate(savedProduct, {
+          path: 'category'
+        });
+        console.log("populatedProduct", populatedProduct)
+        return populatedProduct;
       } catch (error) {
         return {
           success: false,
@@ -167,62 +185,16 @@ const resolvers = {
       }
     },
 
-  //   updateProduct: async (_, { productId, input }) => {
-  //     try {
-  //       // Your product update logic here
-  //       const updatedProduct = await Product.findByIdAndUpdate(
-  //         productId,
-  //         input,
-  //         { new: true }
-  //       );
-  //       return updatedProduct;
-  //     } catch (error) {
-  //       return {
-  //         success: false,
-  //         message: error.message || "Error updating product",
-  //       };
-  //     }
-  //   },
-  //   updateCart: async (_, { userId, productId }) => {
-  //     try {
-  //       // Your cart update logic here
-  //       const cart = await Cart.findOneAndUpdate(
-  //         { userId },
-  //         { $addToSet: { products: productId } },
-  //         { new: true }
-  //       ).populate('products');
-  //       return cart;
-  //     } catch (error) {
-  //       return { success: false, message: error.message || 'Error updating cart' };
-  //     }
-  //   }
-  // },
-  // createCategory: async (_, { input }) => {
-  //   try {
-  //     const newCategory = new Category(input);
-  //     const savedCategory = await newCategory.save();
-  //     return savedCategory;
-  //   } catch (error) {
-  //     return { success: false, message: error.message || 'Error creating category' };
-  //   }
-  // },
-  // updateCategory: async (_, { categoryId, input }) => {
-  //   try {
-  //     const updatedCategory = await Category.findByIdAndUpdate(categoryId, input, { new: true });
-  //     return updatedCategory;
-  //   } catch (error) {
-  //     return { success: false, message: error.message || 'Error updating category' };
-  //   }
-  // },
-  // deleteCategory: async (_, { categoryId }) => {
-  //   try {
-  //     const deletedCategory = await Category.findByIdAndDelete(categoryId);
-  //     return deletedCategory;
-  //   } catch (error) {
-  //     return { success: false, message: error.message || 'Error deleting category' };
-  //   }
-  // },
-  // Other resolvers...
+    deleteProduct: async (_, { productId }) => {
+      try {
+        const deletedProduct = await Product.findByIdAndDelete(productId);
+        return deletedProduct !== null; // Return true if deletedProduct is not null
+      } catch (error) {
+        console.error(error);
+        return false; // Return false in case of an error
+      }
+    },
+
   }
 };
 

@@ -8,6 +8,7 @@ import Home from "./pages/Home"
 import Products from "./pages/Products"
 import ProductsDetail from "./pages/ProductsDetail"
 import Cart from "./pages/Cart"
+import Mypage from "./pages/Mypage"
 import AddProduct from "./pages/AddProduct";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
             {
                 path: "/cart",
                 element: <Cart />,
+            },
+            {
+                path: "mypage",
+                element: <Mypage />
             },
             {
                 path: "/addProduct",

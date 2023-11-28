@@ -71,13 +71,22 @@ export const CREATE_PRODUCT = gql `
             price
             image
             description
-            quantity 
+            quantity
             category {
                 name
             }
         }
     }
 `;
+
+export const DELETE_PRODUCT = gql `
+    mutation createProduct($productId: ID!) {
+        deleteProduct(productId: $productId) {
+            _id
+        }
+    }
+`;
+
 
 // export const UPDATE_PRODUCT = gql `
 //     mutation updateProduct($productId: ID!, $input: ProductInput!) {

@@ -28,9 +28,8 @@ function AuthButton({ closeNavbar }) {
     if (isLoggedIn) {
         return (
             <>
-                {/* <Link to="/" className="text-lg hover:text-olive duration-500" onClick={() => Auth.logout()}>Logout</Link> */}
+                <NavItem to="/mypage" text="My page" currentPage={currentPage} closeNavbar={closeNavbar} />
                 <NavItem to="/" text="Logout" logoutClick={() => Auth.logout()} />
-                <NavItem to="/addProduct" text="Add Product" currentPage={currentPage} closeNavbar={closeNavbar} />
             </>
         );
     } else {
