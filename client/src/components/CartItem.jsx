@@ -1,12 +1,13 @@
 import { useMutation } from "@apollo/client";
 import { useStoreContext } from "../utils/GlobalState";
 import { REMOVE_FROM_CART, UPDATE_CART_QUANTITY } from "../utils/actions";
-import { REMOVE_CART } from "../utils/mutations";
+import { REMOVE_CART, UPDATE_CART } from "../utils/mutations";
 import { idbPromise } from "../utils/helpers";
 
 const CartItem = ({ item }) => {
     const [state, dispatch] = useStoreContext();
     const [ removeCart ] = useMutation(REMOVE_CART);
+    const [ updateCart ] = useMutation(UPDATE_CART);
 
     const removeFromCart = async (productId) => {
         try {
@@ -29,7 +30,7 @@ const CartItem = ({ item }) => {
         }
     };
 
-    const onChange = (e) => {
+    const onChange = async (e) => {
         const value = e.target.value;
         const quantity = parseInt(value);
 
@@ -41,20 +42,27 @@ const CartItem = ({ item }) => {
             dispatch({
                 type: UPDATE_CART_QUANTITY,
                 _id: item._id,
-                purchaseQuantity: parseInt(value)
+                purchaseQuantity: quantity
             });
-            idbPromise('cart', 'put', { ...item, purchaseQuantity: parseInt(value) });
+
+            try {
+                await updateCart({
+                    variables: {
+                        username: state.user.username,
+                        productId: item._id,
+                        quantity: quantity
+                    }
+                });
+            } catch (error) {
+                console.error("Error updating cart on the server:", error);
+            }
+
+            idbPromise('cart', 'put', { ...item, purchaseQuantity: quantity });
         }
     }
 
     return (
         <tr className="flex items-center">
-            {/* <td className="lg:block hidden basis-1/4 px-4 py-3">
-                <img
-                    src={`/images/${item.image}`}
-                    alt=""
-                />
-            </td> */}
             <td className="flex items-center md:flex-row basis-2/4 px-4 py-3 ">
                 <div className="md:block hidden basis-1/3 mr-4 bg-gray">
                     <img

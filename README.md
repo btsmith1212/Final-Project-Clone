@@ -12,6 +12,8 @@ Welcome to ShopSphere, an eco-friendly online e-commerce platform where you can 
 
 - **Category Sorting:** Discover a variety of sustainable products conveniently organized by categories
 
+- **Toast Notifications:** Utilizes [react-hot-toast](https://react-hot-toast.com/) for lightweight and customizable toast notifications
+
 
 ## Technologies Used
 - React
@@ -19,6 +21,7 @@ Welcome to ShopSphere, an eco-friendly online e-commerce platform where you can 
 - GraphQL
 - Apollo Client/Server
 - MongoDB
+- React-hot-toast
 
 ## Installation
 1. Clone the ShopSphere repository to your local machine: `git clone https://github.com/your-username/shopsphere.git`

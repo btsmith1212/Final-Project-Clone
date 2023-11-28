@@ -1,5 +1,6 @@
 const { User, Product, Category, Cart } = require('../models');
 const { signToken, AuthenticationError } = require('../utils/auth');
+const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
 
 
 const resolvers = {
@@ -40,28 +41,40 @@ const resolvers = {
     },
     checkout: async (parent, args, context) => {
       const url = new URL(context.headers.referer).origin;
-      const cart = new Cart({ products: args.products });
+      const user = await User.findById(context.user._id).populate('cart.products');
       const line_items = [];
 
-      const { products } = await cart.populate('products');
+      const { products } = user.cart;
 
       for (let i = 0; i < products.length; i++) {
-        const product = await stripe.products.create({
-          name: products[i].name,
-          description: products[i].description,
-          images: [`${url}/images/${products[i].image}`]
-        });
+        const existingItemIndex = line_items.findIndex(item => item.price === products[i].price);
 
-        const price = await stripe.prices.create({
-          product: product.id,
-          unit_amount: products[i].price * 100,
-          currency: 'usd',
-        });
+        if (existingItemIndex !== -1) {
+          // If the product is already in the line items, increase the quantity
+          line_items[existingItemIndex].quantity += products[i].purchaseQuantity;
+        } else {
+          // If the product is not in the line items, add it as a new line item
+          try {
+            const product = await stripe.products.create({
+              name: products[i].name,
+              description: products[i].description,
+            });
 
-        line_items.push({
-          price: price.id,
-          quantity: 1
-        });
+            const price = await stripe.prices.create({
+              product: product.id,
+              unit_amount: Math.round(products[i].price * 100),
+              currency: 'usd',
+            });
+
+            line_items.push({
+              price: price.id,
+              quantity: products[i].purchaseQuantity
+            });
+
+          } catch (error) {
+            console.error("Error creating product: ", error)
+          }
+        }
       }
 
       const session = await stripe.checkout.sessions.create({
@@ -175,7 +188,7 @@ const resolvers = {
         const populatedProduct = await Product.populate(savedProduct, {
           path: 'category'
         });
-        console.log("populatedProduct", populatedProduct)
+
         return populatedProduct;
       } catch (error) {
         return {
@@ -195,6 +208,23 @@ const resolvers = {
       }
     },
 
+    updateCart: async (_, { productId, quantity }) => {
+      try {
+        const updatedUser = await User.findOneAndUpdate(
+          { 'cart.products._id': productId },
+          {
+            $set: {
+              'cart.products.$.purchaseQuantity': quantity,
+            },
+          }
+        );
+
+        return updatedUser;
+      } catch (error) {
+        console.error('Error updating cart:', error);
+        return false; // Return false in case of an error
+      }
+    },
   }
 };
 
