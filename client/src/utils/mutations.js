@@ -69,36 +69,40 @@ export const CREATE_PRODUCT = gql `
             _id
             name
             price
+            image
             description
-            category
-        }
-    }
-`;
-
-export const UPDATE_PRODUCT = gql `
-    mutation updateProduct($productId: ID!, $input: ProductInput!) {
-        updateProduct(productId: $productId, input: $input) {
-            _id
-            name
-            price
-            description
-            category
-        }
-    }
-`;
-
-export const UPDATE_CART = gql `
-    mutation updateCart($userId: ID!, $productId: ID!) {
-        updateCart(userId: $userId, productId: $productId) {
-            _id
-            userId
-            products {
-                _id
+            quantity 
+            category {
                 name
-                price
-                description
-                category
             }
         }
     }
 `;
+
+// export const UPDATE_PRODUCT = gql `
+//     mutation updateProduct($productId: ID!, $input: ProductInput!) {
+//         updateProduct(productId: $productId, input: $input) {
+//             _id
+//             name
+//             price
+//             description
+//             category
+//         }
+//     }
+// `;
+
+// export const UPDATE_CART = gql `
+//     mutation updateCart($userId: ID!, $productId: ID!) {
+//         updateCart(userId: $userId, productId: $productId) {
+//             _id
+//             userId
+//             products {
+//                 _id
+//                 name
+//                 price
+//                 description
+//                 category
+//             }
+//         }
+//     }
+// `;

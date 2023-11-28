@@ -30,7 +30,7 @@ function AuthButton({ closeNavbar }) {
             <>
                 {/* <Link to="/" className="text-lg hover:text-olive duration-500" onClick={() => Auth.logout()}>Logout</Link> */}
                 <NavItem to="/" text="Logout" logoutClick={() => Auth.logout()} />
-                <NavItem to="/post" text="Add Product" currentPage={currentPage} closeNavbar={closeNavbar} />
+                <NavItem to="/addProduct" text="Add Product" currentPage={currentPage} closeNavbar={closeNavbar} />
             </>
         );
     } else {

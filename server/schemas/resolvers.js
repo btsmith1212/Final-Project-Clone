@@ -143,19 +143,29 @@ const resolvers = {
         return user;
       }
     },
-  //   createProduct: async (_, { input }) => {
-  //     try {
-  //       // Your product creation logic here
-  //       const newProduct = new Product(input);
-  //       const savedProduct = await newProduct.save();
-  //       return savedProduct;
-  //     } catch (error) {
-  //       return {
-  //         success: false,
-  //         message: error.message || "Error creating product",
-  //       };
-  //     }
-  //   },
+
+    createProduct: async (_, { input }) => {
+      try {
+        const category = await Category.findOne({ name: input.category.name });
+        if (!category) {
+          throw new Error("Category not found");
+        }
+        console.log(category)
+      
+        // Create the product with the provided input
+        const newProduct = new Product({
+          ...input,
+          category: category ? category._id : null,
+        });
+        const savedProduct = await newProduct.save();
+        return savedProduct;
+      } catch (error) {
+        return {
+          success: false,
+          message: error.message || "Error creating product",
+        };
+      }
+    },
 
   //   updateProduct: async (_, { productId, input }) => {
   //     try {

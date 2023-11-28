@@ -116,12 +116,12 @@ function ProductsDetail() {
                     <Link to="/products">← Back to Products</Link>
 
                     <div className="flex md:flex-row flex-col justify-center items-center mt-10">
-                        <div className="basis-1/2 sm:h-80 h-60 bg-gray">
-                            {<img src={`/images/${currentProduct.image}`} alt={currentProduct.name} />}
+                        <div className="basis-1/2">
+                            {<img src={`/images/${currentProduct.image}`} alt={currentProduct.name} className="w-full h-full"/>}
                         </div>
 
                         <div className="basis-1/2 md:pl-10">
-                            <h2 className="sm:text-2xl font-bold">{currentProduct.name}</h2>
+                            <h2 className="md:mt-0 mt-5 text-2xl font-bold">{currentProduct.name}</h2>
                             <p className="mt-5">{currentProduct.description}</p>
                             <p className="mt-7 text-lg">
                                 <strong>Price:</strong>${currentProduct.price}{" "}

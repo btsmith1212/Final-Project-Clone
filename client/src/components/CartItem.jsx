@@ -56,8 +56,14 @@ const CartItem = ({ item }) => {
                 />
             </td> */}
             <td className="flex items-center md:flex-row basis-2/4 px-4 py-3 ">
-                <div className="md:block hidden w-24 h-28 mr-4 bg-gray"></div>
-                <p>{item.name}</p>
+                <div className="md:block hidden basis-1/3 mr-4 bg-gray">
+                    <img
+                        alt={name}
+                        src={`/images/${item.image}`}
+                        className="w-full h-full block"
+                    />
+                </div>
+                <p className="basis-2/3">{item.name}</p>
             </td>
             <td className="basis-1/4 px-4 py-3">${item.price}</td>
             <td className="basis-1/4 px-4 py-3">

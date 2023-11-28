@@ -14,7 +14,7 @@ function ProductItem(item) {
             <img
                 alt={name}
                  src={`/images/${image}`}
-                className="w-full h-40 bg-gray"
+                className="w-full h-48 bg-gray"
             />
             <div className="mt-3">
                 <p className="text-lg">{name}</p>

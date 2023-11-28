@@ -45,7 +45,7 @@ function ProductList() {
     return (
         <div id="products" className="mt-10">
             {state.products.length &&
-                <ul className="flex flex-wrap justify-center items-center">
+                <ul className="flex flex-wrap justify-center items-start">
                     {filterProducts().map((product) => (
                         <ProductItem
                             key={product._id}

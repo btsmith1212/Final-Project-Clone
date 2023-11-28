@@ -57,6 +57,7 @@ table {
 img {
     display: block;
     width: inherit;
+    object-fit: cover;
 }
 
 textarea {
@@ -137,6 +138,16 @@ section {
     width: 1px;
     height: 6px;
     background-color: #ccc;
+}
+
+.price-input::before {
+    content: '$'; 
+    position: absolute; 
+    bottom: 0;
+    margin-bottom: -30px;
+    left: 0;
+    font-size: 18px;
+    z-index: 1;
 }
 
 /* footer */
