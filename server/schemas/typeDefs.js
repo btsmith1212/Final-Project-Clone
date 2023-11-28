@@ -56,9 +56,11 @@ const typeDefs = gql `
 
   input ProductInput {
     name: String!
-    price: Float!
+    price: Float
+    image: String
+    quantity: Int
     description: String
-    category: String
+    category: CategoryInput
   }
 
   input CategoryInput {

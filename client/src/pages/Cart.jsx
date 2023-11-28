@@ -88,7 +88,6 @@ function Cart() {
             <section className="flex flex-col justify-center py-14 max-w-6xl mx-auto">
                 <h2 className="text-3xl text-center font-bold">Shopping Cart</h2>
                 {loading ? (
-                    // 로딩 중일 때의 화면
                     <div className="text-center mt-16">
                         <img src={spinner} alt="loading" className="inline-block w-32" />
                     </div>
