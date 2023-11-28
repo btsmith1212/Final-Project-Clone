@@ -150,6 +150,12 @@ section {
     z-index: 1;
 }
 
+.delete-btn {
+    border: 1px solid #dc2323;
+    color: #dc2323;
+    background-color: #fae0e0;
+}
+
 /* footer */
 .footer a::after {
     content: "";

@@ -16,6 +16,10 @@ export const QUERY_USER = gql`
           purchaseQuantity
         }
       }
+      addedProducts {
+        _id
+        name
+      }
     }
   }
 `;

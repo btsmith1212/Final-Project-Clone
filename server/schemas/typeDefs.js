@@ -5,6 +5,7 @@ const typeDefs = gql `
     _id: ID!
     username: String!
     cart: Cart
+    addedProducts: [Product]
   }
 
   type Product {
@@ -51,20 +52,16 @@ const typeDefs = gql `
     addCart(productId: ID!): User
     removeCart(productId: ID!): User
     createProduct(input: ProductInput!): Product
-    updateProduct(productId: ID!, input: ProductInput!): Product
+    deleteProduct(productId: ID!): Product
   }
-
+  
   input ProductInput {
     name: String!
     price: Float
     image: String
     quantity: Int
     description: String
-    category: CategoryInput
-  }
-
-  input CategoryInput {
-    name: String!
+    category: String
   }
 `;
 
