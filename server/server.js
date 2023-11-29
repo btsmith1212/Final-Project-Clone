@@ -15,10 +15,6 @@ const server = new ApolloServer({
   context: authMiddleware
 });
 
-// app.use(express.static('public'));
-
-
-
 // Create a new instance of an Apollo server with the GraphQL schema
 const startApolloServer = async () => {
   await server.start();
