@@ -40,27 +40,6 @@ const client = new ApolloClient({
     cache: new InMemoryCache(),
 });
 
-// Function to handle image upload
-const handleImageUpload = async (e) => {
-    const data = new FormData();
-    data.append("file", e.target.files[0]);
-    // Appending required fields for cloudinary upload
-    data.append("upload_preset", "home-upload");
-    data.append("cloud_name", "dkxi93m71");
-    // Posting request to cloudinary API
-    try {
-        const response = await fetch(process.env.REACT_APP_CLOUDINARY_URL, {
-            method: "POST",
-            body: data,
-        });
-        const imageData = await response.json();
-        // Do something with the image data (e.g., set it in the state)
-        console.log("Image data:", imageData);
-    } catch (error) {
-        console.error("Error uploading image:", error);
-    }
-};
-
 
 function App() {
     const [loading, setLoading] = useState(true);
@@ -89,7 +68,7 @@ function App() {
                     <>
                     <Header />
                     <main className="sm:pl-60">
-                        <Outlet handleImageUpload={handleImageUpload} />
+                        <Outlet />
                         <Footer />
                     </main>
                     <Toaster />

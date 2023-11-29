@@ -40,14 +40,14 @@ function ProductPost() {
     category: "",
   });
   const { data: userData } = useQuery(QUERY_USER);
+  const [imageFileName, setImageFileName] = useState("Choose a file");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // const [imageSelected, setImageSelected] = useState("");
-  console.log(formData);
+
   const uploadImage = (files) => {
     const formData = new FormData();
     formData.append("file", files);
@@ -61,9 +61,12 @@ function ProductPost() {
       {
         console.log(response);
         setFormData((prevState) => ({
-        ...prevState,
-        image: response.data.url,
-      }))}
+          ...prevState,
+          image: response.data.url,
+        }))
+      
+        setImageFileName(response.data.original_filename); // Set the image file name
+      }
     );
   };
 
@@ -87,7 +90,6 @@ function ProductPost() {
         },
         refetchQueries: [{ query: QUERY_PRODUCTS }, { query: QUERY_USER }],
       });
-      console.log(formData);
 
       // Update the IndexedDB store
       idbPromise("products", "put", data.createProduct);
@@ -128,12 +130,22 @@ function ProductPost() {
       >
         {fields.map((field) =>
           field.name == "image" ? (
-            <input
-              type="file"
-              onChange={(event) => {
-                uploadImage(event.target.files[0]);
-              }}
-            />
+            <>
+            <div className="basis-full flex flex-col border border-gray rounded-md px-3 py-2 mt-2 ml-2 file-input">
+              <label htmlFor="file" className="cursor-pointer">
+                Image<br />
+                  <span>{imageFileName}</span>
+              </label>
+              <input
+                type="file"
+                id="file"
+                className=""
+                onChange={(event) => {
+                  uploadImage(event.target.files[0]);
+                }}
+              />
+            </div>
+            </>
           ) : (
             <InputField
               key={field.name}

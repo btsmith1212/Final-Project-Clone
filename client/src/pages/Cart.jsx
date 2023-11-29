@@ -20,7 +20,7 @@ function Cart() {
     const [state, dispatch] = useStoreContext();
     const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
     const [loading, setLoading] = useState(true);
-    console.log(state)
+
     useEffect(() => {
         if (!Auth.loggedIn()) {
             toast.error("Please log in first");
@@ -77,7 +77,6 @@ function Cart() {
             }
         });
         
-        console.log(productIds)
         getCheckout({
             variables: { products: productIds },
         });
