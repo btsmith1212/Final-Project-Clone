@@ -27,7 +27,6 @@ function ProductsDetail() {
     const navigate = useNavigate();
 
     const [currentProduct, setCurrentProduct] = useState({});
-    console.log("Product Page", state.cart)
     
     useEffect(() => {
         // retrieved from server
@@ -55,7 +54,6 @@ function ProductsDetail() {
 
         // Retrieve cart from IndexedDB and merge with current state
         idbPromise("cart", "get").then((indexedCart) => {
-            console.log("Indexed Cart:", indexedCart);
             if (indexedCart !== undefined) {
                 dispatch({
                     type: UPDATE_CART_QUANTITY,

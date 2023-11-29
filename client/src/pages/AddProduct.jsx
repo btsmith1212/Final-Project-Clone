@@ -1,84 +1,51 @@
-import { useState, useEffect } from "react";
-import { useMutation } from "@apollo/client";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation } from "@apollo/client";
 import { useStoreContext } from "../utils/GlobalState";
 
-import InputField from "../components/InputField";
-import { UPDATE_PRODUCTS } from "../utils/actions";
+import InputField from '../components/InputField';
+import { UPDATE_PRODUCTS, UPDATE_USER } from "../utils/actions";
 import { useQuery } from "@apollo/client";
-import { QUERY_PRODUCTS } from "../utils/queries";
-import { CREATE_PRODUCT } from "../utils/mutations";
+import { QUERY_USER, QUERY_PRODUCTS } from "../utils/queries";
+import { CREATE_PRODUCT } from '../utils/mutations'; 
 import { idbPromise } from "../utils/helpers";
-
 import Axios from "axios";
 
-function ProductPost() {
-  const fields = [
-    { label: "Name", name: "name", type: "text", required: true },
-    { label: "Price", name: "price", type: "number", required: true },
-    { label: "Quantity", name: "quantity", type: "number", required: true },
-    { label: "Category", name: "category", type: "select", required: true },
-    {
-      label: "Image",
-      name: "image",
-      type: "text",
-      class: "cloudinary-button",
-      required: true,
-    },
-    {
-      label: "Description",
-      name: "description",
-      type: "textarea",
-      required: true,
-    },
-  ];
+import toast from "react-hot-toast";
 
-  const [state, dispatch] = useStoreContext();
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    quantity: "",
-    image: "",
-    category: {
-      name: "",
-    },
-  });
-  const [createProduct] = useMutation(CREATE_PRODUCT);
+function ProductPost () {
+    const navigate = useNavigate();
 
-  // const { loading, data } = useQuery(QUERY_PRODUCTS);
+    const fields = [
+        { label: 'Name', name: 'name', type: 'text', required: true },
+        { label: 'Price', name: 'price', type: 'number', required: true },
+        { label: 'Quantity', name: 'quantity', type: 'number', required: true },
+        { label: 'Category', name: 'category', type: 'select', required: true },
+        { label: 'Image', name: 'image', type: 'text', required: true },
+        { label: 'Description', name: 'description', type: 'textarea', required: true },
+    ];
 
-  // useEffect(() => {
-  //     if (data) {
-  //         dispatch({
-  //             type: UPDATE_PRODUCTS,
-  //             products: data.products,
-  //         });
-  //         data.products.forEach((product) => {
-  //             idbPromise("products", "put", product);
-  //         });
-  //     } else if (!loading) {
-  //         idbPromise("products", "get").then((products) => {
-  //             dispatch({
-  //                 type: UPDATE_PRODUCTS,
-  //                 products: products,
-  //             });
-  //         });
-  //     }
-  // }, [data, loading, dispatch]);
+    const [state, dispatch] = useStoreContext();
+    const [createProduct] = useMutation(CREATE_PRODUCT);
+    const [formData, setFormData] = useState({
+        name: "",
+        description: "",
+        price: "",
+        quantity: "",
+        image: "",
+        category: {
+            name: ""
+        }
+    });
+    const { data:userData } = useQuery(QUERY_USER);
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // const myWidget = cloudinary.createUploadWidget({
-  //   cloudName: 'dvi14vg6b',
-  //   uploadPreset: 'shopsphere'}, (error, result) => {
-  //     if (!error && result && result.event === "success") {
-  //       console.log('Done! Here is the image info: ', result.info);
-  //     }
-  //   }
-  // )
   const [imageSelected, setImageSelected] = useState("");
 
   const uploadImage = () => {
@@ -92,51 +59,54 @@ function ProductPost() {
     ).then((response) => console.log(response));
   };
 
-  // document.getElementById("upload_widget").addEventListener("click", function(){
-  //     myWidget.open();
-  //   }, false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    try {
-      const { data } = await createProduct({
-        variables: {
-          input: {
-            ...formData,
-            price: parseFloat(formData.price),
-            quantity: parseInt(formData.quantity),
-            category: { name: formData.category },
-          },
-        },
-      });
-      console.log(formData);
+        // Check if quantity or price is negative
+        if (parseFloat(formData.quantity) < 0 || parseInt(formData.price) < 0) {
+            toast.error("Quantity and price cannot be negative.");
+            return;
+        }
 
-      // // Update the IndexedDB store
-      // idbPromise("products", "put", data.createProduct);
+        try {
+            const { data } = await createProduct({
+                variables: {
+                    input: {
+                        ...formData,
+                        price: parseFloat(formData.price),
+                        quantity: parseInt(formData.quantity),
+                        category: formData.category
+                    }
+                },
+                refetchQueries: [{ query: QUERY_PRODUCTS }, { query: QUERY_USER }]
+            });
+            console.log(formData)
 
-      // // Dispatch the action to update the local state
-      // dispatch({
-      //     type: UPDATE_PRODUCTS,
-      //     products: [...state.products, data.createProduct],
-      // });
+            // Update the IndexedDB store
+            idbPromise("products", "put", data.createProduct);
 
-      console.log("Product created:", data.createProduct);
-      console.log(state);
+            // Dispatch the action to update the local state
+            dispatch({
+                type: UPDATE_PRODUCTS,
+                products: [...state.products, data.createProduct], 
+            });
 
-      // Reset the form data
-      // setFormData({
-      //     name: "",
-      //     description: "",
-      //     price: "",
-      //     quantity: "",
-      //     image: "",
-      //     category: "",
-      // });
-    } catch (error) {
-      console.error("Error creating product:", error.message);
-    }
-  };
+            // Update the user's addedProducts with the new product
+            dispatch({
+                type: UPDATE_USER,
+                payload: {
+                    ...state.user,
+                    addedProducts: [...state.user.addedProducts, data.createProduct],
+                },
+            });
+
+            toast.success("Your product has been successfully added!");
+            navigate("/mypage");
+        } catch (error) {
+            console.error('Error creating product:', error.message);
+        }
+    };
 
   return (
     <section className="flex flex-col justify-center items-center py-16 pl-2 pr-4">

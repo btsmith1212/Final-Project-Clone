@@ -18,9 +18,9 @@ const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 function Cart() {
     const navigate = useNavigate();
     const [state, dispatch] = useStoreContext();
-    const [getCheckout, { checkoutData }] = useLazyQuery(QUERY_CHECKOUT);
+    const [getCheckout, { data }] = useLazyQuery(QUERY_CHECKOUT);
     const [loading, setLoading] = useState(true);
-
+    console.log(state)
     useEffect(() => {
         if (!Auth.loggedIn()) {
             toast.error("Please log in first");
@@ -30,12 +30,12 @@ function Cart() {
 
 
     useEffect(() => {
-        if (checkoutData) {
+        if (data) {
             stripePromise.then((res) => {
-                res.redirectToCheckout({ sessionId: checkoutData.checkout.session });
+                res.redirectToCheckout({ sessionId: data.checkout.session });
             });
         }
-    }, [checkoutData]);
+    }, [data]);
 
     
 
@@ -43,7 +43,7 @@ function Cart() {
     useEffect(() => {
         async function getCart() {
             const cart = await idbPromise("cart", "get");
-            dispatch({ type: ADD_MULTIPLE_TO_CART, products: cart });
+            dispatch({ type: ADD_MULTIPLE_TO_CART, products: [...cart] });
             setLoading(false);
         }
         
@@ -70,13 +70,14 @@ function Cart() {
 
     function submitCheckout() {
         const productIds = [];
-
+        
         state.cart.forEach((item) => {
             for (let i = 0; i < item.purchaseQuantity; i++) {
                 productIds.push(item._id);
             }
         });
-
+        
+        console.log(productIds)
         getCheckout({
             variables: { products: productIds },
         });

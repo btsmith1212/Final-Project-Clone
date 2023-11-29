@@ -1,5 +1,6 @@
 const { User, Product, Category, Cart } = require('../models');
 const { signToken, AuthenticationError } = require('../utils/auth');
+const stripe = require('stripe')('sk_test_4eC39HqLyjWDarjtT1zdp7dc');
 
 
 const resolvers = {
@@ -27,10 +28,12 @@ const resolvers = {
     },
     user: async (parent, args, context) => {
       if (context.user) {
-        const user = await User.findById(context.user._id).populate({
+        const user = await User.findById(context.user._id)
+        .populate({
           path: 'cart.products',
           populate: 'category'
-        });
+        })
+        .populate('addedProducts');
         return user;
       }
 
@@ -38,28 +41,40 @@ const resolvers = {
     },
     checkout: async (parent, args, context) => {
       const url = new URL(context.headers.referer).origin;
-      const cart = new Cart({ products: args.products });
+      const user = await User.findById(context.user._id).populate('cart.products');
       const line_items = [];
 
-      const { products } = await cart.populate('products');
+      const { products } = user.cart;
 
       for (let i = 0; i < products.length; i++) {
-        const product = await stripe.products.create({
-          name: products[i].name,
-          description: products[i].description,
-          images: [`${url}/images/${products[i].image}`]
-        });
+        const existingItemIndex = line_items.findIndex(item => item.price === products[i].price);
 
-        const price = await stripe.prices.create({
-          product: product.id,
-          unit_amount: products[i].price * 100,
-          currency: 'usd',
-        });
+        if (existingItemIndex !== -1) {
+          // If the product is already in the line items, increase the quantity
+          line_items[existingItemIndex].quantity += products[i].purchaseQuantity;
+        } else {
+          // If the product is not in the line items, add it as a new line item
+          try {
+            const product = await stripe.products.create({
+              name: products[i].name,
+              description: products[i].description,
+            });
 
-        line_items.push({
-          price: price.id,
-          quantity: 1
-        });
+            const price = await stripe.prices.create({
+              product: product.id,
+              unit_amount: Math.round(products[i].price * 100),
+              currency: 'usd',
+            });
+
+            line_items.push({
+              price: price.id,
+              quantity: products[i].purchaseQuantity
+            });
+
+          } catch (error) {
+            console.error("Error creating product: ", error)
+          }
+        }
       }
 
       const session = await stripe.checkout.sessions.create({
@@ -109,7 +124,7 @@ const resolvers = {
       if (!product) {
         throw new Error('Product not found');
       }
-      console.log(product)
+
       if (context.user) {
         const user = await User.findByIdAndUpdate(
           context.user._id,
@@ -144,21 +159,37 @@ const resolvers = {
       }
     },
 
-    createProduct: async (_, { input }) => {
+    createProduct: async (_, { input }, context) => {
       try {
-        const category = await Category.findOne({ name: input.category.name });
-        if (!category) {
-          throw new Error("Category not found");
-        }
-        console.log(category)
-      
-        // Create the product with the provided input
+        const { category, ...productInput } = input;
+
+        // Find the category by name
+        const categoryObj = await Category.findOne({ name: category });
+
+        // Create the product with the provided input and category
         const newProduct = new Product({
-          ...input,
-          category: category ? category._id : null,
+          ...productInput,
+          category: categoryObj._id,
         });
+        
         const savedProduct = await newProduct.save();
-        return savedProduct;
+
+        // Associate the created product with the user's addedProducts
+        await User.findByIdAndUpdate(
+          context.user._id, {
+            $push: {
+              addedProducts: savedProduct._id
+            },
+          }, {
+            new: true
+          }
+        );
+
+        const populatedProduct = await Product.populate(savedProduct, {
+          path: 'category'
+        });
+
+        return populatedProduct;
       } catch (error) {
         return {
           success: false,
@@ -167,62 +198,33 @@ const resolvers = {
       }
     },
 
-  //   updateProduct: async (_, { productId, input }) => {
-  //     try {
-  //       // Your product update logic here
-  //       const updatedProduct = await Product.findByIdAndUpdate(
-  //         productId,
-  //         input,
-  //         { new: true }
-  //       );
-  //       return updatedProduct;
-  //     } catch (error) {
-  //       return {
-  //         success: false,
-  //         message: error.message || "Error updating product",
-  //       };
-  //     }
-  //   },
-  //   updateCart: async (_, { userId, productId }) => {
-  //     try {
-  //       // Your cart update logic here
-  //       const cart = await Cart.findOneAndUpdate(
-  //         { userId },
-  //         { $addToSet: { products: productId } },
-  //         { new: true }
-  //       ).populate('products');
-  //       return cart;
-  //     } catch (error) {
-  //       return { success: false, message: error.message || 'Error updating cart' };
-  //     }
-  //   }
-  // },
-  // createCategory: async (_, { input }) => {
-  //   try {
-  //     const newCategory = new Category(input);
-  //     const savedCategory = await newCategory.save();
-  //     return savedCategory;
-  //   } catch (error) {
-  //     return { success: false, message: error.message || 'Error creating category' };
-  //   }
-  // },
-  // updateCategory: async (_, { categoryId, input }) => {
-  //   try {
-  //     const updatedCategory = await Category.findByIdAndUpdate(categoryId, input, { new: true });
-  //     return updatedCategory;
-  //   } catch (error) {
-  //     return { success: false, message: error.message || 'Error updating category' };
-  //   }
-  // },
-  // deleteCategory: async (_, { categoryId }) => {
-  //   try {
-  //     const deletedCategory = await Category.findByIdAndDelete(categoryId);
-  //     return deletedCategory;
-  //   } catch (error) {
-  //     return { success: false, message: error.message || 'Error deleting category' };
-  //   }
-  // },
-  // Other resolvers...
+    deleteProduct: async (_, { productId }) => {
+      try {
+        const deletedProduct = await Product.findByIdAndDelete(productId);
+        return deletedProduct !== null; // Return true if deletedProduct is not null
+      } catch (error) {
+        console.error(error);
+        return false; // Return false in case of an error
+      }
+    },
+
+    updateCart: async (_, { productId, quantity }) => {
+      try {
+        const updatedUser = await User.findOneAndUpdate(
+          { 'cart.products._id': productId },
+          {
+            $set: {
+              'cart.products.$.purchaseQuantity': quantity,
+            },
+          }
+        );
+
+        return updatedUser;
+      } catch (error) {
+        console.error('Error updating cart:', error);
+        return false; // Return false in case of an error
+      }
+    },
   }
 };
 
