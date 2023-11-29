@@ -37,9 +37,7 @@ function ProductPost() {
     price: "",
     quantity: "",
     image: "",
-    category: {
-      name: "",
-    },
+    category: "",
   });
   const { data: userData } = useQuery(QUERY_USER);
 
@@ -48,17 +46,25 @@ function ProductPost() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const [imageSelected, setImageSelected] = useState("");
-
-  const uploadImage = () => {
+  // const [imageSelected, setImageSelected] = useState("");
+  console.log(formData);
+  const uploadImage = (files) => {
     const formData = new FormData();
-    formData.append("file", imageSelected);
+    formData.append("file", files);
     formData.append("upload_preset", "shopsphere");
+    formData.append("cloud_name", "dvi14vg6b");
 
     Axios.post(
       "https://api.cloudinary.com/v1_1/dvi14vg6b/image/upload",
       formData
-    ).then((response) => console.log(response));
+    ).then((response) =>
+      {
+        console.log(response);
+        setFormData((prevState) => ({
+        ...prevState,
+        image: response.data.url,
+      }))}
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -77,7 +83,6 @@ function ProductPost() {
             ...formData,
             price: parseFloat(formData.price),
             quantity: parseInt(formData.quantity),
-            category: formData.category,
           },
         },
         refetchQueries: [{ query: QUERY_PRODUCTS }, { query: QUERY_USER }],
@@ -126,12 +131,10 @@ function ProductPost() {
             <input
               type="file"
               onChange={(event) => {
-                setImageSelected(event.target.files[0]);
-                // uploadImage(event.target.files);
+                uploadImage(event.target.files[0]);
               }}
             />
           ) : (
-            // <button onClick={uploadImage}> Upload Image </button>
             <InputField
               key={field.name}
               label={field.label}

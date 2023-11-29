@@ -13,7 +13,7 @@ function ProductItem(item) {
         <li className="basis-full md:basis-1/2 lg:basis-1/3 mt-5 p-2">
             <img
                 alt={name}
-                src={`/images/${image}`}
+                src={image.includes("http")?image:`/images/${image}`}
                 className="w-full h-48 bg-gray"
             />
             <div className="mt-3">
