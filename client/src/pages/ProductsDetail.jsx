@@ -31,7 +31,7 @@ function ProductsDetail() {
   const navigate = useNavigate();
 
   const [currentProduct, setCurrentProduct] = useState();
-  console.log(currentProduct);
+
   useEffect(() => {
     // retrieved from server
     if (data) {
@@ -84,7 +84,7 @@ function ProductsDetail() {
       );
 
       const isProductInCart = state.cart.find((item) => item._id === id);
-      console.log(isProductInCart);
+
       if (isProductInCart) {
         dispatch({
           type: UPDATE_CART_QUANTITY,
