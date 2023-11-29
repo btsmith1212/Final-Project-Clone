@@ -12,9 +12,10 @@ const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: authMiddleware
 });
 
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 
 
@@ -30,6 +31,7 @@ const startApolloServer = async () => {
     context: authMiddleware
   }));
 
+  app.use(express.static(path.join(__dirname, "../client/dist")));
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
   });
