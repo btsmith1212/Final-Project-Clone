@@ -30,6 +30,10 @@ const startApolloServer = async () => {
     context: authMiddleware
   }));
 
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "build", "index.html"));
+  });
+
   db.once('open', () => {
     app.listen(PORT, () => {
       console.log(`API server running on port ${PORT}!`);
