@@ -41,7 +41,7 @@ function Header() {
 
             {isMobile && (
             <>
-            <div className="fixed top-0 sm:hidden flex w-full justify-between items-center px-5 py-4 bg-ivory">
+            <div className="fixed z-30 top-0 sm:hidden flex w-full justify-between items-center px-5 py-4 bg-ivory">
                 <Link to="/" className="w-24">
                     <img src={logo} alt="A logo with the letter 'S' written inside a circle" />
                 </Link>
@@ -55,7 +55,7 @@ function Header() {
                 </button>
             </div>
 
-            <div className={`absolute top-0 left-0 z-10 w-full h-full invisible bg-overlay ${hamburger ? "open" : ""}`} onClick={closeNavBox}></div>
+            <div className={`fixed top-0 left-0 z-10 w-full h-full invisible bg-overlay ${hamburger ? "open" : ""}`} onClick={closeNavBox}></div>
             </>
             )}
         </>

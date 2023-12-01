@@ -140,6 +140,10 @@ section {
     background-color: #ccc;
 }
 
+.price-input {
+    z-index: 1;
+}
+
 .price-input::before {
     content: '$'; 
     position: absolute; 
@@ -154,15 +158,6 @@ section {
     border: 1px solid #dc2323;
     color: #dc2323;
     background-color: #fae0e0;
-}
-
-.file-input input[type="file"] {
-    position: absolute;
-    width: 0;
-    height: 0;
-    padding: 0;
-    overflow: hidden;
-    border: 0;
 }
 
 /* footer */
