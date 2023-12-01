@@ -27,7 +27,7 @@ function Header() {
 
     return (
         <>
-            <header className={`fixed top-0 left-0 w-60 flex h-full bg-ivory z-20 header ${hamburger && isMobile ? "open" : ""}`}>
+            <header className={`fixed top-0 left-0 w-60 flex h-full bg-ivory z-40 header ${hamburger && isMobile ? "open" : ""}`}>
                 <div className="m-auto flex flex-col items-center justify-center z-10">
                     <h1 className="w-32">
                         <Link to="/">
@@ -41,7 +41,7 @@ function Header() {
 
             {isMobile && (
             <>
-            <div className="fixed z-30 top-0 sm:hidden flex w-full justify-between items-center px-5 py-4 bg-ivory">
+            <div className="fixed z-10 top-0 sm:hidden flex w-full justify-between items-center px-5 py-4 bg-ivory">
                 <Link to="/" className="w-24">
                     <img src={logo} alt="A logo with the letter 'S' written inside a circle" />
                 </Link>
@@ -55,7 +55,7 @@ function Header() {
                 </button>
             </div>
 
-            <div className={`fixed top-0 left-0 z-10 w-full h-full invisible bg-overlay ${hamburger ? "open" : ""}`} onClick={closeNavBox}></div>
+            <div className={`fixed top-0 left-0 z-20 w-full h-full invisible bg-overlay ${hamburger ? "open" : ""}`} onClick={closeNavBox}></div>
             </>
             )}
         </>

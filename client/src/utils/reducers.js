@@ -8,6 +8,7 @@ import {
     ADD_MULTIPLE_TO_CART,
     UPDATE_CATEGORIES,
     UPDATE_CURRENT_CATEGORY,
+    CLEAR_CART
 } from './actions';
 
 
@@ -72,6 +73,12 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 currentCategory: action.currentCategory,
+            };
+
+        case CLEAR_CART:
+            return {
+                ...state,
+                cart: [],
             };
 
         default:
