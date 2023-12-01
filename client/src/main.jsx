@@ -12,6 +12,7 @@ import Mypage from "./pages/Mypage"
 import AddProduct from "./pages/AddProduct";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import OrderSuccess from "./pages/OrderSuccess.jsx"
 
 const router = createBrowserRouter([
     {
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
             {
                 path: "/Signup",
                 element: <Signup />,
+            },
+            {
+                path: "/order/success",
+                element: <OrderSuccess />,
             },
         ],
     },

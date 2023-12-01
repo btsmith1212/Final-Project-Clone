@@ -12,7 +12,7 @@ function NavItem({ to, text, currentPage, closeNavbar, logoutClick }) {
                     if (logoutClick) {
                         logoutClick()
                     }
-                    closeNavbar
+                    closeNavbar()
                 }}
             >
                 {text}

@@ -32,6 +32,11 @@ const startApolloServer = async () => {
     res.sendFile(path.resolve(__dirname, "../client/dist/index.html"));
   });
 
+  app.get('/order/success', async (req, res) => {
+    const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+    const customer = await stripe.customers.retrieve(session.customer);
+  });
+
   db.once('open', () => {
     app.listen(PORT, () => {
       console.log(`API server running on port ${PORT}!`);
