@@ -31,13 +31,10 @@ function Cart() {
 
     useEffect(() => {
         if (data) {
-            const { successUrl } = data.checkout;
-
-            stripePromise.then((res) => {
+            stripePromise
+            .then((res) => {
                 res.redirectToCheckout({ sessionId: data.checkout.session });
             });
-
-            window.location.href = successUrl;
         }
     }, [data]);
 
